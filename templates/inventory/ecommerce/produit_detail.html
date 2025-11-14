@@ -1,0 +1,177 @@
+{% extends 'inventory/ecommerce/base.html' %}
+
+{% block title %}{{ produit.nom }} - GGStock{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav class="bg-gray-50 py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <ol class="flex items-center space-x-2 text-sm">
+            <li>
+                <a href="{% url 'inventory:ecommerce_home' %}" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li class="text-gray-400">/</li>
+            <li>
+                <a href="{% url 'inventory:ecommerce_catalogue' %}" class="text-gray-500 hover:text-gray-700">
+                    Catalogue
+                </a>
+            </li>
+            {% if produit.categorie %}
+            <li class="text-gray-400">/</li>
+            <li>
+                <a href="{% url 'inventory:ecommerce_catalogue' %}?categorie={{ produit.categorie.id }}" 
+                   class="text-gray-500 hover:text-gray-700">
+                    {{ produit.categorie.nom }}
+                </a>
+            </li>
+            {% endif %}
+            <li class="text-gray-400">/</li>
+            <li class="text-gray-800 font-medium">{{ produit.nom }}</li>
+        </ol>
+    </div>
+</nav>
+
+<!-- Détail du produit -->
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Image du produit -->
+            <div class="space-y-4">
+                <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200">
+                    {% if produit.image %}
+                        <img src="{{ produit.image.url }}" 
+                             alt="{{ produit.nom }}" 
+                             class="h-96 w-full object-cover object-center">
+                    {% else %}
+                        <div class="h-96 w-full bg-gray-200 flex items-center justify-center">
+                            <i class="fas fa-image text-8xl text-gray-400"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Informations du produit -->
+            <div class="space-y-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">{{ produit.nom }}</h1>
+                    {% if produit.categorie %}
+                        <p class="text-lg text-gray-600 mt-2">
+                            <i class="fas fa-tag mr-2"></i>{{ produit.categorie.nom }}
+                        </p>
+                    {% endif %}
+                </div>
+                
+            
+                
+                <!-- Description -->
+                {% if produit.description %}
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Description</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ produit.description }}</p>
+                </div>
+                {% endif %}
+                
+                <!-- Informations techniques -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Informations</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                       
+                        
+                        {% if produit.fournisseur %}
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-truck text-gray-500 mr-2"></i>
+                                <span class="font-medium text-gray-800">Fournisseur</span>
+                            </div>
+                            <p class="text-gray-600">{{ produit.fournisseur.nom }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        
+                    </div>
+                </div>
+                
+                <!-- Actions admin (si connecté) -->
+                {% if user.is_authenticated %}
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Actions administrateur</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="{% url 'inventory:produit_detail' produit.pk %}" 
+                           class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                            <i class="fas fa-cog mr-2"></i>Gérer ce produit
+                        </a>
+                        <a href="{% url 'inventory:produit_update' produit.pk %}" 
+                           class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                            <i class="fas fa-edit mr-2"></i>Modifier
+                        </a>
+                        <a href="{% url 'inventory:dashboard' %}" 
+                           class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Produits similaires -->
+{% if produits_similaires %}
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Produits similaires</h2>
+            <p class="text-gray-600">Découvrez d'autres produits de la même catégorie</p>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for produit_similaire in produits_similaires %}
+                <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition duration-300 transform hover:scale-105">
+                    <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-t-lg bg-gray-200">
+                        {% if produit_similaire.image %}
+                            <img src="{{ produit_similaire.image.url }}" 
+                                 alt="{{ produit_similaire.nom }}" 
+                                 class="h-48 w-full object-cover object-center">
+                        {% else %}
+                            <div class="h-48 w-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-image text-4xl text-gray-400"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2 truncate">
+                            {{ produit_similaire.nom }}
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                            {{ produit_similaire.description|truncatechars:60 }}
+                        </p>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xl font-bold text-blue-600">
+                                {{ produit_similaire.prix_vente }}F CFA
+                            </span>
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-box mr-1"></i>{{ produit_similaire.quantite_stock }}
+                            </span>
+                        </div>
+                        <a href="{% url 'inventory:ecommerce_produit_detail' produit_similaire.pk %}" 
+                           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg text-center block transition duration-200">
+                            <i class="fas fa-eye mr-2"></i>Voir détails
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-8">
+            <a href="{% url 'inventory:ecommerce_catalogue' %}{% if produit.categorie %}?categorie={{ produit.categorie.id }}{% endif %}" 
+               class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200">
+                <i class="fas fa-th mr-2"></i>Voir plus dans cette catégorie
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

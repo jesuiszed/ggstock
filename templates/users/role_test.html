@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Test des Rôles - GGStock{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-user-shield mr-2"></i>Test des Permissions de Rôles
+        </h1>
+        
+        {% if error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <strong>Erreur:</strong> {{ error }}
+            </div>
+        {% else %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Informations utilisateur -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-user mr-2"></i>Informations Utilisateur
+                    </h2>
+                    <div class="space-y-2">
+                        <p><strong>Nom d'utilisateur:</strong> {{ user.username }}</p>
+                        <p><strong>Nom complet:</strong> {{ user.get_full_name|default:"Non défini" }}</p>
+                        <p><strong>Email:</strong> {{ user.email|default:"Non défini" }}</p>
+                        <p><strong>Rôle:</strong> 
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ role }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Permissions -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-key mr-2"></i>Permissions
+                    </h2>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span>Gérer les produits:</span>
+                            {% if can_manage_products %}
+                                <span class="text-green-600"><i class="fas fa-check"></i> Autorisé</span>
+                            {% else %}
+                                <span class="text-red-600"><i class="fas fa-times"></i> Refusé</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span>Gérer les clients:</span>
+                            {% if can_manage_clients %}
+                                <span class="text-green-600"><i class="fas fa-check"></i> Autorisé</span>
+                            {% else %}
+                                <span class="text-red-600"><i class="fas fa-times"></i> Refusé</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span>Gérer les commandes:</span>
+                            {% if can_manage_orders %}
+                                <span class="text-green-600"><i class="fas fa-check"></i> Autorisé</span>
+                            {% else %}
+                                <span class="text-red-600"><i class="fas fa-times"></i> Refusé</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span>Gérer les ventes:</span>
+                            {% if can_manage_sales %}
+                                <span class="text-green-600"><i class="fas fa-check"></i> Autorisé</span>
+                            {% else %}
+                                <span class="text-red-600"><i class="fas fa-times"></i> Refusé</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span>Gérer le stock:</span>
+                            {% if can_manage_stock %}
+                                <span class="text-green-600"><i class="fas fa-check"></i> Autorisé</span>
+                            {% else %}
+                                <span class="text-red-600"><i class="fas fa-times"></i> Refusé</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span>Gérer les fournisseurs:</span>
+                            {% if can_manage_suppliers %}
+                                <span class="text-green-600"><i class="fas fa-check"></i> Autorisé</span>
+                            {% else %}
+                                <span class="text-red-600"><i class="fas fa-times"></i> Refusé</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span>Voir les analyses:</span>
+                            {% if can_view_analytics %}
+                                <span class="text-green-600"><i class="fas fa-check"></i> Autorisé</span>
+                            {% else %}
+                                <span class="text-red-600"><i class="fas fa-times"></i> Refusé</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Description des rôles -->
+            <div class="mt-8 bg-blue-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-blue-800 mb-3">
+                    <i class="fas fa-info-circle mr-2"></i>Description des Rôles
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <h4 class="font-medium text-blue-700">Manager</h4>
+                        <p class="text-blue-600">Accès complet à toutes les fonctionnalités</p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-blue-700">Commercial Showroom</h4>
+                        <p class="text-blue-600">Gestion des ventes uniquement</p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-blue-700">Commercial Terrain</h4>
+                        <p class="text-blue-600">Gestion des clients et commandes</p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-blue-700">Technicien</h4>
+                        <p class="text-blue-600">Gestion des produits, stock et fournisseurs</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="mt-6 flex justify-between">
+            <a href="{% url 'inventory:dashboard' %}" 
+               class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Retour au Dashboard
+            </a>
+            
+            <a href="{% url 'inventory:admin_logout' %}" 
+               class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                <i class="fas fa-sign-out-alt mr-2"></i>Se déconnecter
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

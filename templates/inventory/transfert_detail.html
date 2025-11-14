@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Transfert {{ transfert.numero_transfert }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Transfert {{ transfert.numero_transfert }}</h1>
+        <div class="flex space-x-2">
+            <a href="{% url 'inventory:transfert_list' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                <i class="fas fa-arrow-left mr-2"></i>Retour à la liste
+            </a>
+            {% if user.profile.role in 'MANAGER,TECHNICIEN' %}
+            <a href="{% url 'inventory:transfert_edit' transfert.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <i class="fas fa-edit mr-2"></i>Modifier
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Informations principales -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Informations générales -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+                    Informations générales
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Numéro de transfert</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ transfert.numero_transfert }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Type de transfert</label>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                            {% if transfert.type_transfert == 'INTER_MAGASIN' %}bg-blue-100 text-blue-800
+                            {% elif transfert.type_transfert == 'RETOUR_FOURNISSEUR' %}bg-purple-100 text-purple-800
+                            {% elif transfert.type_transfert == 'LIVRAISON_CLIENT' %}bg-green-100 text-green-800
+                            {% elif transfert.type_transfert == 'MAINTENANCE' %}bg-yellow-100 text-yellow-800
+                            {% elif transfert.type_transfert == 'REBUT' %}bg-red-100 text-red-800
+                            {% endif %}">
+                            {{ transfert.get_type_transfert_display }}
+                        </span>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Produit</label>
+                        <p class="text-lg font-semibold text-gray-900">
+                            <a href="{% url 'inventory:produit_detail' transfert.produit.pk %}" class="text-blue-600 hover:text-blue-800">
+                                {{ transfert.produit.nom }}
+                            </a>
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Quantité</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ transfert.quantite }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Demandeur</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ transfert.demande_par.get_full_name }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Statut</label>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                            {% if transfert.statut == 'EN_ATTENTE' %}bg-yellow-100 text-yellow-800
+                            {% elif transfert.statut == 'APPROUVE' %}bg-blue-100 text-blue-800
+                            {% elif transfert.statut == 'EN_TRANSIT' %}bg-indigo-100 text-indigo-800
+                            {% elif transfert.statut == 'LIVRE' %}bg-green-100 text-green-800
+                            {% elif transfert.statut == 'ANNULE' %}bg-red-100 text-red-800
+                            {% endif %}">
+                            {{ transfert.get_statut_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                {% if transfert.motif %}
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-500">Motif</label>
+                    <p class="text-gray-900 mt-1">{{ transfert.motif }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Origine et destination -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+                    Origine et destination
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800 mb-3">Origine</h3>
+                        <div class="space-y-2">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Lieu</label>
+                                <p class="text-lg font-semibold text-gray-900">{{ transfert.lieu_origine }}</p>
+                            </div>
+                            {% if transfert.contact_origine %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Contact</label>
+                                <p class="text-gray-900">{{ transfert.contact_origine }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800 mb-3">Destination</h3>
+                        <div class="space-y-2">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Lieu</label>
+                                <p class="text-lg font-semibold text-gray-900">{{ transfert.lieu_destination }}</p>
+                            </div>
+                            {% if transfert.contact_destination %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Contact</label>
+                                <p class="text-gray-900">{{ transfert.contact_destination }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planification et suivi -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+                    Planification et suivi
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Date de création</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ transfert.date_creation|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    
+                    {% if transfert.date_prevue_livraison %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Livraison prévue</label>
+                        <p class="text-lg font-semibold {% if transfert.date_prevue_livraison < today %}text-red-600{% else %}text-gray-900{% endif %}">
+                            {{ transfert.date_prevue_livraison|date:"d/m/Y" }}
+                        </p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if transfert.date_expedition %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Date d'expédition</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ transfert.date_expedition|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if transfert.date_livraison %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Date de livraison</label>
+                        <p class="text-lg font-semibold text-green-600">{{ transfert.date_livraison|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if transfert.transporteur %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Transporteur</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ transfert.transporteur }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if transfert.numero_suivi %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Numéro de suivi</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ transfert.numero_suivi }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if transfert.observations %}
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-500">Observations</label>
+                    <div class="bg-gray-50 p-3 rounded-md mt-1">
+                        <p class="text-gray-900 whitespace-pre-line">{{ transfert.observations }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Actions rapides -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Actions rapides</h3>
+                <div class="space-y-2">
+                    {% if transfert.statut == 'EN_ATTENTE' and user.profile.role in 'MANAGER,TECHNICIEN' %}
+                    <button onclick="approveTransfer()" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-check mr-2"></i>Approuver
+                    </button>
+                    {% endif %}
+                    
+                    {% if transfert.statut == 'APPROUVE' and user.profile.role in 'MANAGER,TECHNICIEN' %}
+                    <button onclick="shipTransfer()" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-truck mr-2"></i>Expédier
+                    </button>
+                    {% endif %}
+                    
+                    {% if transfert.statut == 'EN_TRANSIT' and user.profile.role in 'MANAGER,TECHNICIEN' %}
+                    <button onclick="deliverTransfer()" class="w-full bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-check-circle mr-2"></i>Marquer livré
+                    </button>
+                    {% endif %}
+                    
+                    {% if user.profile.role in 'MANAGER,TECHNICIEN' %}
+                    <a href="{% url 'inventory:transfert_edit' transfert.pk %}" class="w-full bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded block text-center">
+                        <i class="fas fa-edit mr-2"></i>Modifier
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{% url 'inventory:produit_detail' transfert.produit.pk %}" class="w-full bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded block text-center">
+                        <i class="fas fa-box mr-2"></i>Voir le produit
+                    </a>
+                </div>
+            </div>
+
+            <!-- Informations produit -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Produit concerné</h3>
+                <div class="space-y-3">
+                    <div>
+                        <span class="text-sm text-gray-600">Nom</span>
+                        <p class="font-semibold text-gray-900">{{ transfert.produit.nom }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-600">Référence</span>
+                        <p class="font-semibold text-gray-900">{{ transfert.produit.reference }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-600">Stock actuel</span>
+                        <p class="font-semibold text-gray-900">{{ transfert.produit.quantite_stock }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-600">Prix unitaire</span>
+                        <p class="font-semibold text-green-600">{{ transfert.produit.prix|floatformat:2 }} F CFA</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Priorité et statut -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Statut et priorité</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Priorité</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            {% if transfert.priorite == 'URGENT' %}bg-red-100 text-red-800
+                            {% elif transfert.priorite == 'HAUTE' %}bg-orange-100 text-orange-800
+                            {% elif transfert.priorite == 'NORMALE' %}bg-blue-100 text-blue-800
+                            {% elif transfert.priorite == 'BASSE' %}bg-gray-100 text-gray-800
+                            {% endif %}">
+                            {{ transfert.get_priorite_display }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Statut actuel</span>
+                        <span class="font-semibold">{{ transfert.get_statut_display }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Type</span>
+                        <span class="font-semibold">{{ transfert.get_type_transfert_display }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Timeline</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Créé le</span>
+                        <span class="font-semibold">{{ transfert.date_creation|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    {% if transfert.date_expedition %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Expédié le</span>
+                        <span class="font-semibold">{{ transfert.date_expedition|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if transfert.date_livraison %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Livré le</span>
+                        <span class="font-semibold text-green-600">{{ transfert.date_livraison|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function approveTransfer() {
+    if (confirm('Êtes-vous sûr de vouloir approuver ce transfert ?')) {
+        window.location.href = '{% url "inventory:transfert_edit" transfert.pk %}?action=approve';
+    }
+}
+
+function shipTransfer() {
+    if (confirm('Êtes-vous sûr de vouloir marquer ce transfert comme expédié ?')) {
+        window.location.href = '{% url "inventory:transfert_edit" transfert.pk %}?action=ship';
+    }
+}
+
+function deliverTransfer() {
+    if (confirm('Êtes-vous sûr de vouloir marquer ce transfert comme livré ?')) {
+        window.location.href = '{% url "inventory:transfert_edit" transfert.pk %}?action=deliver';
+    }
+}
+</script>
+{% endblock %}

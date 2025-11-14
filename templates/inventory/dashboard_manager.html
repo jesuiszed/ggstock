@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Manager - {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block page_title %}
+    <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+            <i class="fas fa-crown text-white"></i>
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Dashboard Manager</h1>
+            <p class="text-gray-600">Tableau de bord administrateur complet</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    
+    <!-- Statistiques rapides -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-100">Total Produits</p>
+                    <p class="text-3xl font-bold">{{ total_produits }}</p>
+                </div>
+                <i class="fas fa-box text-blue-200 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100">Total Clients</p>
+                    <p class="text-3xl font-bold">{{ total_clients }}</p>
+                </div>
+                <i class="fas fa-users text-green-200 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-yellow-100">Ventes du mois</p>
+                    <p class="text-3xl font-bold">{{ ventes_mois.count|default:0 }}</p>
+                </div>
+                <i class="fas fa-cash-register text-yellow-200 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-red-500 to-red-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-red-100">Stock Bas</p>
+                    <p class="text-3xl font-bold">{{ produits_stock_bas }}</p>
+                </div>
+                <i class="fas fa-exclamation-triangle text-red-200 text-2xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides Manager -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+            <i class="fas fa-bolt text-purple-500 mr-2"></i>Actions Rapides Manager
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <a href="{% url 'users:user_management' %}" class="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-users-cog text-purple-600"></i>
+                    <span class="font-medium text-purple-800">Gestion Utilisateurs</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'inventory:produits_list' %}" class="bg-blue-50 hover:bg-blue-100 p-4 rounded-lg border border-blue-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-box text-blue-600"></i>
+                    <span class="font-medium text-blue-800">Gestion Produits</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'inventory:stock_list' %}" class="bg-orange-50 hover:bg-orange-100 p-4 rounded-lg border border-orange-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-warehouse text-orange-600"></i>
+                    <span class="font-medium text-orange-800">Gestion Stock</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'inventory:ventes_list' %}" class="bg-green-50 hover:bg-green-100 p-4 rounded-lg border border-green-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-cash-register text-green-600"></i>
+                    <span class="font-medium text-green-800">Gestion Ventes</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Alertes et notifications -->
+    {% if produits_stock_bas > 0 %}
+    <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-red-400"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-red-700">
+                    <strong>Attention !</strong> {{ produits_stock_bas }} produit{{ produits_stock_bas|pluralize }} en stock bas.
+                    <a href="{% url 'inventory:stock_list' %}" class="font-medium underline hover:text-red-600">
+                        Voir les détails
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Aperçu des données -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Dernières ventes -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Dernières Ventes</h3>
+            </div>
+            <div class="p-6">
+                {% if dernieres_ventes %}
+                    <div class="space-y-3">
+                        {% for vente in dernieres_ventes %}
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                            <div>
+                                <p class="font-medium">{{ vente.client.nom }}</p>
+                                <p class="text-sm text-gray-500">{{ vente.date_vente|date:"d/m/Y" }}</p>
+                            </div>
+                            <span class="font-bold text-green-600">{{ vente.total }}F CFA</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">Aucune vente récente</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Dernières commandes -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Dernières Commandes</h3>
+            </div>
+            <div class="p-6">
+                {% if dernieres_commandes %}
+                    <div class="space-y-3">
+                        {% for commande in dernieres_commandes %}
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                            <div>
+                                <p class="font-medium">{{ commande.client.nom_complet }}</p>
+                                <p class="text-sm text-gray-500">{{ commande.date_commande|date:"d/m/Y" }}</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs rounded
+                                   {% if commande.statut == 'EN_ATTENTE' %}bg-yellow-100 text-yellow-800
+                                   {% elif commande.statut == 'LIVREE' %}bg-green-100 text-green-800
+                                   {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ commande.get_statut_display }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">Aucune commande récente</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

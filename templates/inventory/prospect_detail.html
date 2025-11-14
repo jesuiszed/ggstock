@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Prospect - {{ prospect.nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">{{ prospect.nom_entreprise }}</h1>
+        <div class="flex space-x-2">
+            <a href="{% url 'inventory:prospect_list' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                <i class="fas fa-arrow-left mr-2"></i>Retour à la liste
+            </a>
+            {% if user.profile.role in 'COMMERCIAL_TERRAIN,MANAGER' %}
+            <a href="{% url 'inventory:prospect_edit' prospect.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <i class="fas fa-edit mr-2"></i>Modifier
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Informations principales -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Informations générales -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+                    Informations générales
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Entreprise</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ prospect.nom_entreprise }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Secteur d'activité</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ prospect.secteur_activite|default:"Non spécifié" }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Taille entreprise</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ prospect.get_taille_entreprise_display|default:"Non spécifiée" }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Statut</label>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                            {% if prospect.statut == 'NOUVEAU' %}bg-blue-100 text-blue-800
+                            {% elif prospect.statut == 'CONTACTE' %}bg-yellow-100 text-yellow-800
+                            {% elif prospect.statut == 'QUALIFIE' %}bg-purple-100 text-purple-800
+                            {% elif prospect.statut == 'NEGOCIE' %}bg-orange-100 text-orange-800
+                            {% elif prospect.statut == 'GAGNE' %}bg-green-100 text-green-800
+                            {% elif prospect.statut == 'PERDU' %}bg-red-100 text-red-800
+                            {% endif %}">
+                            {{ prospect.get_statut_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                {% if prospect.besoins_identifies %}
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-500">Besoins identifiés</label>
+                    <p class="text-gray-900 mt-1">{{ prospect.besoins_identifies }}</p>
+                </div>
+                {% endif %}
+                
+                {% if prospect.notes %}
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-500">Notes</label>
+                    <p class="text-gray-900 mt-1">{{ prospect.notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Contact principal -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+                    Contact principal
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Nom du contact</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ prospect.nom_contact }}</p>
+                    </div>
+                    
+                    {% if prospect.fonction_contact %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Fonction</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ prospect.fonction_contact }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if prospect.telephone %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Téléphone</label>
+                        <p class="text-lg font-semibold text-gray-900">
+                            <a href="tel:{{ prospect.telephone }}" class="text-blue-600 hover:text-blue-800">
+                                {{ prospect.telephone }}
+                            </a>
+                        </p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if prospect.email %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Email</label>
+                        <p class="text-lg font-semibold text-gray-900">
+                            <a href="mailto:{{ prospect.email }}" class="text-blue-600 hover:text-blue-800">
+                                {{ prospect.email }}
+                            </a>
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if prospect.adresse %}
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-500">Adresse</label>
+                    <p class="text-gray-900 mt-1">{{ prospect.adresse }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Notes d'observation -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800 border-b border-gray-200 pb-2">
+                        Notes d'observation
+                    </h2>
+                    <a href="{% url 'inventory:note_create' %}?prospect={{ prospect.pk }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm">
+                        <i class="fas fa-plus mr-2"></i>Ajouter une note
+                    </a>
+                </div>
+                
+                {% if notes %}
+                <div class="space-y-3">
+                    {% for note in notes %}
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">{{ note.titre }}</div>
+                                <div class="text-sm text-gray-600 mt-1">{{ note.contenu|truncatewords:30 }}</div>
+                            </div>
+                            <div class="text-right ml-4">
+                                <div class="text-sm text-gray-500">{{ note.date_creation|date:"d/m/Y H:i" }}</div>
+                                <div class="text-sm text-gray-500">{{ note.auteur.get_full_name }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500 text-center py-4">Aucune note d'observation pour ce prospect.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Actions rapides -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Actions rapides</h3>
+                <div class="space-y-2">
+                    <a href="{% url 'inventory:note_create' %}?prospect={{ prospect.pk }}" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded block text-center">
+                        <i class="fas fa-plus mr-2"></i>Ajouter une note
+                    </a>
+                    {% if user.profile.role in 'COMMERCIAL_TERRAIN,MANAGER' %}
+                    <a href="{% url 'inventory:prospect_edit' prospect.pk %}" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded block text-center">
+                        <i class="fas fa-edit mr-2"></i>Modifier
+                    </a>
+                    {% endif %}
+                    {% if prospect.email %}
+                    <a href="mailto:{{ prospect.email }}" class="w-full bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded block text-center">
+                        <i class="fas fa-envelope mr-2"></i>Envoyer un email
+                    </a>
+                    {% endif %}
+                    {% if prospect.telephone %}
+                    <a href="tel:{{ prospect.telephone }}" class="w-full bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded block text-center">
+                        <i class="fas fa-phone mr-2"></i>Appeler
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Informations commerciales -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Informations commerciales</h3>
+                <div class="space-y-3">
+                    {% if prospect.budget_estime %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Budget estimé</span>
+                        <span class="font-semibold text-green-600">{{ prospect.budget_estime|floatformat:2 }} F CFA</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if prospect.echeance_prevue %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Échéance prévue</span>
+                        <span class="font-semibold {% if prospect.echeance_prevue < today %}text-red-600{% else %}text-gray-900{% endif %}">
+                            {{ prospect.echeance_prevue|date:"d/m/Y" }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if prospect.commercial_assigne %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Commercial assigné</span>
+                        <span class="font-semibold text-gray-900">{{ prospect.commercial_assigne.get_full_name }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Source</span>
+                        <span class="font-semibold text-gray-900">{{ prospect.get_source_display|default:"Non spécifiée" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historique -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Historique</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Créé le</span>
+                        <span class="font-semibold">{{ prospect.date_creation|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Dernière maj</span>
+                        <span class="font-semibold">{{ prospect.date_modification|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Statut actuel</span>
+                        <span class="font-semibold">{{ prospect.get_statut_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Transferts de Stock{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Transferts de Stock</h1>
+        {% if user.profile.role in 'MANAGER,TECHNICIEN' %}
+        <a href="{% url 'inventory:transfert_create' %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            <i class="fas fa-exchange-alt mr-2"></i>Nouveau Transfert
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+            <form method="get" class="flex flex-wrap items-center gap-4">
+                <div class="flex-1 min-w-64">
+                    <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Rechercher par numéro, produit, origine, destination..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <select name="statut" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Tous les statuts</option>
+                        {% for value, label in statut_choices %}
+                            <option value="{{ value }}" {% if current_statut == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <select name="type" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Tous les types</option>
+                        {% for value, label in type_choices %}
+                            <option value="{{ value }}" {% if current_type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-search mr-2"></i>Filtrer
+                </button>
+                
+                <a href="{% url 'inventory:transfert_list' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-times mr-2"></i>Réinitialiser
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Statistiques rapides -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-clock text-yellow-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">En attente</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.en_attente }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-truck text-blue-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">En transit</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.en_transit }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check text-green-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Livrés</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.livres }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-times text-red-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Annulés</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.annules }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des transferts -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul class="divide-y divide-gray-200">
+            {% for transfert in transferts %}
+            <li>
+                <a href="{% url 'inventory:transfert_detail' transfert.pk %}" class="block hover:bg-gray-50">
+                    <div class="px-4 py-4 sm:px-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exchange-alt text-gray-400 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-indigo-600">{{ transfert.numero_transfert }}</div>
+                                    <div class="text-sm text-gray-900">{{ transfert.produit.nom }}</div>
+                                    <div class="text-sm text-gray-500">Quantité: {{ transfert.quantite }}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-right">
+                                    <div class="text-sm font-medium text-gray-900">{{ transfert.date_creation|date:"d/m/Y H:i" }}</div>
+                                    <div class="text-sm text-gray-500">Par {{ transfert.demande_par.get_full_name }}</div>
+                                    {% if transfert.date_prevue_livraison %}
+                                    <div class="text-sm text-gray-500">Livraison prévue: {{ transfert.date_prevue_livraison|date:"d/m/Y" }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex flex-col items-end space-y-2">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if transfert.type_transfert == 'INTER_MAGASIN' %}bg-blue-100 text-blue-800
+                                        {% elif transfert.type_transfert == 'RETOUR_FOURNISSEUR' %}bg-purple-100 text-purple-800
+                                        {% elif transfert.type_transfert == 'LIVRAISON_CLIENT' %}bg-green-100 text-green-800
+                                        {% elif transfert.type_transfert == 'MAINTENANCE' %}bg-yellow-100 text-yellow-800
+                                        {% elif transfert.type_transfert == 'REBUT' %}bg-red-100 text-red-800
+                                        {% endif %}">
+                                        {{ transfert.get_type_transfert_display }}
+                                    </span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if transfert.statut == 'EN_ATTENTE' %}bg-yellow-100 text-yellow-800
+                                        {% elif transfert.statut == 'APPROUVE' %}bg-blue-100 text-blue-800
+                                        {% elif transfert.statut == 'EN_TRANSIT' %}bg-indigo-100 text-indigo-800
+                                        {% elif transfert.statut == 'LIVRE' %}bg-green-100 text-green-800
+                                        {% elif transfert.statut == 'ANNULE' %}bg-red-100 text-red-800
+                                        {% endif %}">
+                                        {{ transfert.get_statut_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Détails origine/destination -->
+                        <div class="mt-2 grid grid-cols-2 gap-4">
+                            <div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide">Origine</div>
+                                <div class="text-sm text-gray-900">{{ transfert.lieu_origine }}</div>
+                                {% if transfert.contact_origine %}
+                                <div class="text-xs text-gray-500">{{ transfert.contact_origine }}</div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide">Destination</div>
+                                <div class="text-sm text-gray-900">{{ transfert.lieu_destination }}</div>
+                                {% if transfert.contact_destination %}
+                                <div class="text-xs text-gray-500">{{ transfert.contact_destination }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Motif -->
+                        {% if transfert.motif %}
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-600">{{ transfert.motif|truncatewords:15 }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Actions rapides -->
+                        <div class="mt-2 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                {% if transfert.statut == 'EN_ATTENTE' %}
+                                <span class="text-sm text-yellow-600 flex items-center">
+                                    <i class="fas fa-clock mr-1"></i>En attente d'approbation
+                                </span>
+                                {% elif transfert.statut == 'APPROUVE' %}
+                                <span class="text-sm text-blue-600 flex items-center">
+                                    <i class="fas fa-check mr-1"></i>Approuvé
+                                </span>
+                                {% elif transfert.statut == 'EN_TRANSIT' %}
+                                <span class="text-sm text-indigo-600 flex items-center">
+                                    <i class="fas fa-truck mr-1"></i>En transit
+                                    {% if transfert.date_expedition %}
+                                        depuis le {{ transfert.date_expedition|date:"d/m/Y" }}
+                                    {% endif %}
+                                </span>
+                                {% elif transfert.statut == 'LIVRE' %}
+                                <span class="text-sm text-green-600 flex items-center">
+                                    <i class="fas fa-check-circle mr-1"></i>Livré
+                                    {% if transfert.date_livraison %}
+                                        le {{ transfert.date_livraison|date:"d/m/Y" }}
+                                    {% endif %}
+                                </span>
+                                {% endif %}
+                                
+                                {% if transfert.transporteur %}
+                                <span class="text-sm text-gray-600 flex items-center">
+                                    <i class="fas fa-shipping-fast mr-1"></i>{{ transfert.transporteur }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            
+                            {% if transfert.priorite == 'URGENT' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>URGENT
+                            </span>
+                            {% elif transfert.priorite == 'HAUTE' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                <i class="fas fa-exclamation mr-1"></i>HAUTE
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </li>
+            {% empty %}
+            <li class="p-8 text-center text-gray-500">
+                <i class="fas fa-exchange-alt text-4xl mb-4"></i>
+                <p>Aucun transfert trouvé</p>
+                {% if user.profile.role in 'MANAGER,TECHNICIEN' %}
+                <a href="{% url 'inventory:transfert_create' %}" class="mt-4 inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Créer le premier transfert
+                </a>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Pagination -->
+    {% if transferts.has_other_pages %}
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6">
+        <div class="flex-1 flex justify-between sm:hidden">
+            {% if transferts.has_previous %}
+                <a href="?page={{ transferts.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" 
+                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Précédent
+                </a>
+            {% endif %}
+            {% if transferts.has_next %}
+                <a href="?page={{ transferts.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" 
+                   class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Suivant
+                </a>
+            {% endif %}
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700">
+                    Affichage de <span class="font-medium">{{ transferts.start_index }}</span> à <span class="font-medium">{{ transferts.end_index }}</span>
+                    sur <span class="font-medium">{{ transferts.paginator.count }}</span> résultats
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if transferts.has_previous %}
+                        <a href="?page={{ transferts.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in transferts.paginator.page_range %}
+                        {% if transferts.number == num %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if transferts.has_next %}
+                        <a href="?page={{ transferts.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

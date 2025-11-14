@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Devis{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Gestion des Devis</h1>
+        <a href="{% url 'inventory:devis_create' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <i class="fas fa-plus mr-2"></i>Nouveau Devis
+        </a>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-file-alt text-gray-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Devis</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.total_devis }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-edit text-yellow-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Enregistrés</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.devis_brouillon }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-paper-plane text-blue-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Envoyés</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.devis_envoyes }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check text-green-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Acceptés</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.devis_acceptes }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <span class="text-green-500 text-2xl font-bold">F CFA</span>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Montant Total</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.total_montant|floatformat:2 }}F CFA</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+            <form method="get" class="flex flex-wrap items-center gap-4">
+                <div class="flex-1 min-w-64">
+                    <input type="text" name="search" value="{{ search }}" placeholder="Rechercher par numéro, client..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <select name="statut" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Tous les statuts</option>
+                        {% for value, label in statut_choices %}
+                            <option value="{{ value }}" {% if current_statut == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-search mr-2"></i>Filtrer
+                </button>
+                
+                <a href="{% url 'inventory:devis_list' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-times mr-2"></i>Réinitialiser
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des devis -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul class="divide-y divide-gray-200">
+            {% for devis_item in devis %}
+            <li>
+                <a href="{% url 'inventory:devis_detail' devis_item.pk %}" class="block hover:bg-gray-50">
+                    <div class="px-4 py-4 sm:px-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-file-alt text-gray-400 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-indigo-600">{{ devis_item.numero_devis }}</div>
+                                    <div class="text-sm text-gray-500">{{ devis_item.client.nom_complet }}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-right">
+                                    <div class="text-sm font-medium text-gray-900">{{ devis_item.total|floatformat:2 }}F CFA</div>
+                                    <div class="text-sm text-gray-500">{{ devis_item.date_creation|date:"d/m/Y" }}</div>
+                                </div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if devis_item.statut == 'BROUILLON' %}bg-gray-100 text-gray-800
+                                    {% elif devis_item.statut == 'ENVOYE' %}bg-blue-100 text-blue-800
+                                    {% elif devis_item.statut == 'ACCEPTE' %}bg-green-100 text-green-800
+                                    {% elif devis_item.statut == 'REFUSE' %}bg-red-100 text-red-800
+                                    {% elif devis_item.statut == 'EXPIRE' %}bg-yellow-100 text-yellow-800
+                                    {% endif %}">
+                                    {{ devis_item.get_statut_display }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            {% empty %}
+            <li class="p-8 text-center text-gray-500">
+                <i class="fas fa-file-alt text-4xl mb-4"></i>
+                <p>Aucun devis trouvé</p>
+                <a href="{% url 'inventory:devis_create' %}" class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Créer le premier devis
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Pagination -->
+    {% if devis.has_other_pages %}
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6">
+        <div class="flex-1 flex justify-between sm:hidden">
+            {% if devis.has_previous %}
+                <a href="?page={{ devis.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Précédent
+                </a>
+            {% endif %}
+            {% if devis.has_next %}
+                <a href="?page={{ devis.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                   class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Suivant
+                </a>
+            {% endif %}
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700">
+                    Affichage de <span class="font-medium">{{ devis.start_index }}</span> à <span class="font-medium">{{ devis.end_index }}</span>
+                    sur <span class="font-medium">{{ devis.paginator.count }}</span> résultats
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if devis.has_previous %}
+                        <a href="?page={{ devis.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in devis.paginator.page_range %}
+                        {% if devis.number == num %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if devis.has_next %}
+                        <a href="?page={{ devis.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

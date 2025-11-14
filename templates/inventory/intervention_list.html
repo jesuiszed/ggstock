@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Interventions SAV{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Interventions SAV</h1>
+        <a href="{% url 'inventory:intervention_create' %}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            <i class="fas fa-plus mr-2"></i>Planifier Intervention
+        </a>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+            <form method="get" class="flex flex-wrap items-center gap-4">
+                <div class="flex-1 min-w-64">
+                    <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Rechercher par numéro, appareil, client..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <select name="statut" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Tous les statuts</option>
+                        {% for value, label in statut_choices %}
+                            <option value="{{ value }}" {% if current_statut == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <select name="type" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Tous les types</option>
+                        {% for value, label in type_choices %}
+                            <option value="{{ value }}" {% if current_type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-search mr-2"></i>Filtrer
+                </button>
+                
+                <a href="{% url 'inventory:intervention_list' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-times mr-2"></i>Réinitialiser
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des interventions -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul class="divide-y divide-gray-200">
+            {% for intervention in interventions %}
+            <li>
+                <a href="{% url 'inventory:intervention_detail' intervention.pk %}" class="block hover:bg-gray-50">
+                    <div class="px-4 py-4 sm:px-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-tools text-gray-400 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-indigo-600">{{ intervention.numero_intervention }}</div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ intervention.appareil.produit.nom }} ({{ intervention.appareil.numero_serie }})
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ intervention.client.nom_complet }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-right">
+                                    <div class="text-sm font-medium text-gray-900">{{ intervention.date_prevue|date:"d/m/Y H:i" }}</div>
+                                    <div class="text-sm text-gray-500">{{ intervention.technicien.get_full_name }}</div>
+                                    <div class="text-sm text-gray-500">{{ intervention.duree_prevue }} min</div>
+                                </div>
+                                <div class="flex flex-col items-end space-y-2">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if intervention.type_intervention == 'PREVENTIVE' %}bg-blue-100 text-blue-800
+                                        {% elif intervention.type_intervention == 'CORRECTIVE' %}bg-red-100 text-red-800
+                                        {% elif intervention.type_intervention == 'INSTALLATION' %}bg-green-100 text-green-800
+                                        {% elif intervention.type_intervention == 'FORMATION' %}bg-purple-100 text-purple-800
+                                        {% elif intervention.type_intervention == 'DIAGNOSTIC' %}bg-yellow-100 text-yellow-800
+                                        {% endif %}">
+                                        {{ intervention.get_type_intervention_display }}
+                                    </span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if intervention.statut == 'PLANIFIEE' %}bg-blue-100 text-blue-800
+                                        {% elif intervention.statut == 'EN_COURS' %}bg-yellow-100 text-yellow-800
+                                        {% elif intervention.statut == 'TERMINEE' %}bg-green-100 text-green-800
+                                        {% elif intervention.statut == 'REPORTEE' %}bg-orange-100 text-orange-800
+                                        {% elif intervention.statut == 'ANNULEE' %}bg-red-100 text-red-800
+                                        {% endif %}">
+                                        {{ intervention.get_statut_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Description -->
+                        {% if intervention.description %}
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-600">{{ intervention.description|truncatewords:15 }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Actions rapides -->
+                        <div class="mt-2 flex items-center space-x-4">
+                            {% if intervention.statut == 'PLANIFIEE' %}
+                            <span class="text-sm text-blue-600 flex items-center">
+                                <i class="fas fa-clock mr-1"></i>Intervention prévue
+                            </span>
+                            {% elif intervention.statut == 'EN_COURS' %}
+                            <span class="text-sm text-yellow-600 flex items-center">
+                                <i class="fas fa-play mr-1"></i>En cours
+                            </span>
+                            {% elif intervention.statut == 'TERMINEE' %}
+                            <span class="text-sm text-green-600 flex items-center">
+                                <i class="fas fa-check mr-1"></i>Terminée
+                                {% if intervention.date_realisee %}
+                                    le {{ intervention.date_realisee|date:"d/m/Y" }}
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                            
+                            {% if intervention.note_satisfaction %}
+                            <span class="text-sm text-purple-600 flex items-center">
+                                <i class="fas fa-star mr-1"></i>Satisfaction: {{ intervention.note_satisfaction }}/5
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </li>
+            {% empty %}
+            <li class="p-8 text-center text-gray-500">
+                <i class="fas fa-tools text-4xl mb-4"></i>
+                <p>Aucune intervention trouvée</p>
+                <a href="{% url 'inventory:intervention_create' %}" class="mt-4 inline-block bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    Planifier la première intervention
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Pagination -->
+    {% if interventions.has_other_pages %}
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6">
+        <div class="flex-1 flex justify-between sm:hidden">
+            {% if interventions.has_previous %}
+                <a href="?page={{ interventions.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" 
+                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Précédent
+                </a>
+            {% endif %}
+            {% if interventions.has_next %}
+                <a href="?page={{ interventions.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" 
+                   class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Suivant
+                </a>
+            {% endif %}
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700">
+                    Affichage de <span class="font-medium">{{ interventions.start_index }}</span> à <span class="font-medium">{{ interventions.end_index }}</span>
+                    sur <span class="font-medium">{{ interventions.paginator.count }}</span> résultats
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if interventions.has_previous %}
+                        <a href="?page={{ interventions.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in interventions.paginator.page_range %}
+                        {% if interventions.number == num %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if interventions.has_next %}
+                        <a href="?page={{ interventions.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

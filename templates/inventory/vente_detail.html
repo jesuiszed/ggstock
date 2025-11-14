@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Détail de la Vente {{ vente.numero_vente }} - GGStock{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- En-tête avec actions -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Vente {{ vente.numero_vente }}</h1>
+                <p class="text-gray-600 mt-1">Détails de la vente</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{% url 'inventory:vente_print_proforma' vente.pk %}" 
+                   class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                    <i class="fas fa-file-invoice-dollar mr-2"></i>
+                    Proforma
+                </a>
+                <a href="{% url 'inventory:vente_print' vente.pk %}" 
+                   class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                    <i class="fas fa-file-invoice mr-2"></i>
+                    Facture
+                </a>
+                <a href="{% url 'inventory:vente_update' vente.pk %}" 
+                   class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                    <i class="fas fa-edit mr-2"></i>
+                    Modifier
+                </a>
+                <a href="{% url 'inventory:ventes_list' %}" 
+                   class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Retour à la liste
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div class="xl:col-span-2">
+                <!-- Informations générales -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Informations générales</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Numéro de vente</label>
+                            <p class="mt-1 text-sm text-gray-900 font-mono">{{ vente.numero_vente }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Date de vente</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ vente.date_vente|date:"d/m/Y à H:i" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Client</label>
+                            <p class="mt-1 text-sm text-gray-900">
+                                {% if vente.client %}
+                                <a href="{% url 'inventory:client_detail' vente.client.pk %}" 
+                                   class="text-blue-600 hover:text-blue-800">
+                                    {{ vente.client.nom_complet }}
+                                </a>
+                                {% else %}
+                                <span class="text-gray-500 italic">Vente comptoir</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Mode de paiement</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ vente.get_mode_paiement_display }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Vendeur</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ vente.utilisateur.get_full_name|default:vente.utilisateur.username }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Statut</label>
+                            <span class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                {{ vente.get_statut_display|default:"Terminée" }}
+                            </span>
+                        </div>
+                        {% if vente.notes %}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Notes</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ vente.notes }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Liste des produits -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Produits vendus</h2>
+                    {% if lignes %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Produit
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Référence
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Quantité
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Prix unitaire
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Total
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% if lignes %}
+                                    {% for ligne in lignes %}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{ ligne.produit.nom }}</div>
+                                            {% if ligne.produit.description %}
+                                            <div class="text-sm text-gray-500">{{ ligne.produit.description|truncatechars:50 }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
+                                            {{ ligne.produit.reference|default:"N/A" }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {{ ligne.quantite }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-mono">
+                                            {{ ligne.prix_unitaire|floatformat:2 }} F CFA
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right font-mono">
+                                            {{ ligne.sous_total|floatformat:2 }} F CFA
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-12 text-center">
+                                            <div class="flex flex-col items-center">
+                                                <i class="fas fa-shopping-cart text-gray-400 text-4xl mb-4"></i>
+                                                <p class="text-gray-500 text-lg">Aucun produit dans cette vente.</p>
+                                                <p class="text-gray-400 text-sm mt-2">
+                                                    Cette vente ne contient aucune ligne de produit.
+                                                </p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                            {% if lignes %}
+                            <tfoot class="bg-gray-50">
+                                <tr>
+                                    <td colspan="4" class="px-6 py-4 text-right text-sm font-medium text-gray-900">
+                                        Total de la vente:
+                                    </td>
+                                    <td class="px-6 py-4 text-right text-lg font-bold text-green-600 font-mono">
+                                        {{ vente.total|floatformat:2 }} F CFA
+                                    </td>
+                                </tr>
+                            </tfoot>
+                            {% endif %}
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-shopping-cart text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-500">Aucun produit dans cette vente.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sidebar avec résumé -->
+            <div class="xl:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Résumé</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Nombre d'articles:</span>
+                            <span class="font-medium">{{ nb_articles }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Quantité totale:</span>
+                            <span class="font-medium">{{ total_quantity }}</span>
+                        </div>
+                        <hr>
+                        <div class="flex justify-between text-lg font-semibold">
+                            <span>Total:</span>
+                            <span class="text-green-600">{{ vente.total|floatformat:2 }} F CFA</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions rapides -->
+                    <div class="mt-6 space-y-2">
+                        <a href="{% url 'inventory:vente_print_proforma' vente.pk %}" 
+                           class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center">
+                            <i class="fas fa-file-invoice-dollar mr-2"></i>
+                            Télécharger Proforma
+                        </a>
+                        <a href="{% url 'inventory:vente_print' vente.pk %}" 
+                           class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center">
+                            <i class="fas fa-file-invoice mr-2"></i>
+                            Télécharger Facture
+                        </a>
+                    </div>
+
+                    {% if vente.client %}
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <h4 class="text-sm font-medium text-gray-900 mb-2">Informations client</h4>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <p><strong>{{ vente.client.nom_complet }}</strong></p>
+                            {% if vente.client.email %}
+                            <p><i class="fas fa-envelope mr-1"></i>{{ vente.client.email }}</p>
+                            {% endif %}
+                            {% if vente.client.telephone %}
+                            <p><i class="fas fa-phone mr-1"></i>{{ vente.client.telephone }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

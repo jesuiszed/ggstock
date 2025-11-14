@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Enterprise Inventory{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_description %}
+<p class="text-gray-600">Vue d'ensemble de votre inventaire d'entreprise</p>
+{% endblock %}
+
+{% block content %}
+<!-- Statistiques principales -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                <i class="fas fa-box text-2xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-2xl font-bold">{{ total_produits }}</h3>
+                <p class="text-gray-600">Produits actifs</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                <i class="fas fa-users text-2xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-2xl font-bold">{{ total_clients }}</h3>
+                <p class="text-gray-600">Clients actifs</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                <i class="fas fa-truck text-2xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-2xl font-bold">{{ total_fournisseurs }}</h3>
+                <p class="text-gray-600">Fournisseurs</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                <i class="fas fa-exclamation-triangle text-2xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-2xl font-bold">{{ produits_stock_bas }}</h3>
+                <p class="text-gray-600">Stock bas</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ventes et Commandes -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+            Ventes du mois
+        </h3>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-3xl font-bold text-green-600">
+                    {{ ventes_mois.total|default:0|floatformat:2 }} F CFA
+                </p>
+                <p class="text-gray-600">Chiffre d'affaires</p>
+            </div>
+            <div>
+                <p class="text-3xl font-bold text-blue-600">
+                    {{ ventes_mois.count|default:0 }}
+                </p>
+                <p class="text-gray-600">Ventes réalisées</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <i class="fas fa-shopping-cart text-orange-600 mr-2"></i>
+            Commandes en cours
+        </h3>
+        <div class="text-center">
+            <p class="text-4xl font-bold text-orange-600">{{ commandes_attente }}</p>
+            <p class="text-gray-600">Commandes en attente de traitement</p>
+            <a href="{% url 'inventory:commandes_list' %}?statut=EN_ATTENTE" class="inline-block mt-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition duration-200">
+                Voir les commandes
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Produits populaires et mouvements récents -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Produits les plus vendus -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <i class="fas fa-star text-yellow-600 mr-2"></i>
+            Produits populaires (30 derniers jours)
+        </h3>
+        {% if produits_populaires %}
+            <div class="space-y-3">
+                {% for produit in produits_populaires %}
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                    <div>
+                        <h4 class="font-medium">{{ produit.nom }}</h4>
+                        <p class="text-sm text-gray-600">{{ produit.reference }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-green-600">{{ produit.total_vendu }} vendus</p>
+                        <p class="text-sm text-gray-600">{{ produit.prix_vente }} F CFA</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">Aucune vente sur cette période</p>
+        {% endif %}
+    </div>
+
+    <!-- Derniers mouvements de stock -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <i class="fas fa-exchange-alt text-indigo-600 mr-2"></i>
+            Derniers mouvements de stock
+        </h3>
+        {% if derniers_mouvements %}
+            <div class="space-y-3">
+                {% for mouvement in derniers_mouvements %}
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                    <div class="flex-1">
+                        <h4 class="font-medium">{{ mouvement.produit.nom }}</h4>
+                        <p class="text-sm text-gray-600">
+                            {{ mouvement.get_type_mouvement_display }} - {{ mouvement.motif }}
+                        </p>
+                        <p class="text-xs text-gray-500">
+                            par {{ mouvement.utilisateur.get_full_name|default:mouvement.utilisateur.username }}
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold {% if mouvement.type_mouvement == 'ENTREE' %}text-green-600{% else %}text-red-600{% endif %}">
+                            {% if mouvement.type_mouvement == 'ENTREE' %}+{% else %}-{% endif %}{{ mouvement.quantite }}
+                        </p>
+                        <p class="text-xs text-gray-500">
+                            {{ mouvement.date_mouvement|date:"d/m H:i" }}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="mt-4 text-center">
+                <a href="{% url 'inventory:stock_list' %}" class="text-indigo-600 hover:text-indigo-800">
+                    Voir tous les mouvements
+                </a>
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">Aucun mouvement récent</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Actions rapides -->
+<div class="mt-8 bg-white rounded-lg shadow p-6">
+    <h3 class="text-lg font-semibold mb-4">Actions rapides</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="{% url 'admin:inventory_produit_add' %}" class="bg-blue-500 text-white p-4 rounded-lg text-center hover:bg-blue-600 transition duration-200">
+            <i class="fas fa-plus text-2xl mb-2"></i>
+            <p>Nouveau produit</p>
+        </a>
+        
+        <a href="{% url 'admin:inventory_client_add' %}" class="bg-green-500 text-white p-4 rounded-lg text-center hover:bg-green-600 transition duration-200">
+            <i class="fas fa-user-plus text-2xl mb-2"></i>
+            <p>Nouveau client</p>
+        </a>
+        
+        <a href="{% url 'admin:inventory_commande_add' %}" class="bg-orange-500 text-white p-4 rounded-lg text-center hover:bg-orange-600 transition duration-200">
+            <i class="fas fa-shopping-cart text-2xl mb-2"></i>
+            <p>Nouvelle commande</p>
+        </a>
+        
+        <a href="{% url 'admin:inventory_vente_add' %}" class="bg-purple-500 text-white p-4 rounded-lg text-center hover:bg-purple-600 transition duration-200">
+            <i class="fas fa-cash-register text-2xl mb-2"></i>
+            <p>Nouvelle vente</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

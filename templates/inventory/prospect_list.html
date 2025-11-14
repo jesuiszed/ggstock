@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Prospects{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Gestion des Prospects</h1>
+        <a href="{% url 'inventory:prospect_create' %}" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+            <i class="fas fa-plus mr-2"></i>Nouveau Prospect
+        </a>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-users text-gray-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Prospects</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.total_prospects }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-user-plus text-green-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Nouveaux</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.nouveaux }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-user-check text-purple-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Qualifiés</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.qualifies }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-handshake text-blue-400 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Convertis</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.convertis }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+            <form method="get" class="flex flex-wrap items-center gap-4">
+                <div class="flex-1 min-w-64">
+                    <input type="text" name="search" value="{{ search }}" placeholder="Rechercher par nom, entreprise, email..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <select name="statut" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Tous les statuts</option>
+                        {% for value, label in statut_choices %}
+                            <option value="{{ value }}" {% if current_statut == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-search mr-2"></i>Filtrer
+                </button>
+                
+                <a href="{% url 'inventory:prospect_list' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-times mr-2"></i>Réinitialiser
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des prospects -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul class="divide-y divide-gray-200">
+            {% for prospect in prospects %}
+            <li>
+                <a href="{% url 'inventory:prospect_detail' prospect.pk %}" class="block hover:bg-gray-50">
+                    <div class="px-4 py-4 sm:px-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-user-tie text-gray-400 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-indigo-600">{{ prospect.nom_complet }}</div>
+                                    <div class="text-sm text-gray-500">
+                                        {% if prospect.entreprise %}{{ prospect.entreprise }} • {% endif %}{{ prospect.email }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-right">
+                                    <div class="text-sm font-medium text-gray-900">{{ prospect.commercial.get_full_name }}</div>
+                                    <div class="text-sm text-gray-500">{{ prospect.date_derniere_interaction|date:"d/m/Y" }}</div>
+                                </div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if prospect.statut == 'NOUVEAU' %}bg-green-100 text-green-800
+                                    {% elif prospect.statut == 'CONTACTE' %}bg-blue-100 text-blue-800
+                                    {% elif prospect.statut == 'INTERESSE' %}bg-yellow-100 text-yellow-800
+                                    {% elif prospect.statut == 'QUALIFIE' %}bg-purple-100 text-purple-800
+                                    {% elif prospect.statut == 'PROPOSE' %}bg-indigo-100 text-indigo-800
+                                    {% elif prospect.statut == 'NEGOCIE' %}bg-orange-100 text-orange-800
+                                    {% elif prospect.statut == 'CONVERTI' %}bg-green-100 text-green-800
+                                    {% elif prospect.statut == 'PERDU' %}bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {{ prospect.get_statut_display }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            {% empty %}
+            <li class="p-8 text-center text-gray-500">
+                <i class="fas fa-user-tie text-4xl mb-4"></i>
+                <p>Aucun prospect trouvé</p>
+                <a href="{% url 'inventory:prospect_create' %}" class="mt-4 inline-block bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                    Créer le premier prospect
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Pagination -->
+    {% if prospects.has_other_pages %}
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6">
+        <div class="flex-1 flex justify-between sm:hidden">
+            {% if prospects.has_previous %}
+                <a href="?page={{ prospects.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Précédent
+                </a>
+            {% endif %}
+            {% if prospects.has_next %}
+                <a href="?page={{ prospects.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                   class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Suivant
+                </a>
+            {% endif %}
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700">
+                    Affichage de <span class="font-medium">{{ prospects.start_index }}</span> à <span class="font-medium">{{ prospects.end_index }}</span>
+                    sur <span class="font-medium">{{ prospects.paginator.count }}</span> résultats
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if prospects.has_previous %}
+                        <a href="?page={{ prospects.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in prospects.paginator.page_range %}
+                        {% if prospects.number == num %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if prospects.has_next %}
+                        <a href="?page={{ prospects.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block title %}Commande {{ commande.numero_commande }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- En-tête avec actions -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Commande {{ commande.numero_commande }}</h1>
+                <p class="text-gray-600 mt-1">Détails de la commande</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{% url 'inventory:commande_print_bon' commande.pk %}" 
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                    <i class="fas fa-file-alt mr-2"></i>
+                    Bon de commande
+                </a>
+                <a href="{% url 'inventory:commande_print_proforma' commande.pk %}" 
+                   class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                    <i class="fas fa-file-invoice-dollar mr-2"></i>
+                    Proforma
+                </a>
+                {% if commande.statut == 'EXPEDIEE' or commande.statut == 'LIVREE' %}
+                <a href="{% url 'inventory:commande_print_livraison' commande.pk %}" 
+                   class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                    <i class="fas fa-truck mr-2"></i>
+                    Bon de livraison
+                </a>
+                {% endif %}
+                <a href="{% url 'inventory:commande_update' commande.pk %}" 
+                   class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                    <i class="fas fa-edit mr-2"></i>
+                    Modifier
+                </a>
+                <a href="{% url 'inventory:commandes_list' %}" 
+                   class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Retour
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Informations de la commande -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Informations générales</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Numéro de commande</label>
+                            <p class="mt-1 text-sm text-gray-900 font-mono">{{ commande.numero_commande }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Date de commande</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ commande.date_commande|date:"d/m/Y à H:i" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Client</label>
+                            <p class="mt-1 text-sm text-gray-900">
+                                <a href="{% url 'inventory:client_detail' commande.client.pk %}" 
+                                   class="text-blue-600 hover:text-blue-800">
+                                    {{ commande.client.get_full_name }}
+                                </a>
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Statut</label>
+                            <span class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if commande.statut == 'EN_ATTENTE' %}bg-yellow-100 text-yellow-800
+                                {% elif commande.statut == 'CONFIRMEE' %}bg-blue-100 text-blue-800
+                                {% elif commande.statut == 'EXPEDIEE' %}bg-purple-100 text-purple-800
+                                {% elif commande.statut == 'LIVREE' %}bg-green-100 text-green-800
+                                {% elif commande.statut == 'ANNULEE' %}bg-red-100 text-red-800
+                                {% endif %}">
+                                {{ commande.get_statut_display }}
+                            </span>
+                        </div>
+                        {% if commande.date_livraison_prevue %}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Livraison prévue</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ commande.date_livraison_prevue|date:"d/m/Y" }}</p>
+                        </div>
+                        {% endif %}
+                        {% if commande.notes %}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Notes</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ commande.notes }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Liste des produits -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Produits commandés</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Produit
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Prix unitaire
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Quantité
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Sous-total
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for ligne in lignes %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            {% if ligne.produit.image %}
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <img class="h-10 w-10 rounded-full object-cover" 
+                                                     src="{{ ligne.produit.image.url }}" 
+                                                     alt="{{ ligne.produit.nom }}">
+                                            </div>
+                                            {% endif %}
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    <a href="{% url 'inventory:produit_detail' ligne.produit.pk %}" 
+                                                       class="text-blue-600 hover:text-blue-800">
+                                                        {{ ligne.produit.nom }}
+                                                    </a>
+                                                </div>
+                                                <div class="text-sm text-gray-500">{{ ligne.produit.reference }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ ligne.prix_unitaire|floatformat:2 }} F CFA
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ ligne.quantite }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ ligne.sous_total|floatformat:2 }} F CFA
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                                        Aucun produit dans cette commande
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Résumé financier -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Résumé financier</h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Sous-total :</span>
+                            <span class="text-sm font-medium text-gray-900">{{ commande.sous_total|floatformat:2 }} F CFA</span>
+                        </div>
+                        {% if commande.remise > 0 %}
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Remise :</span>
+                            <span class="text-sm font-medium text-red-600">-{{ commande.remise|floatformat:2 }} F CFA</span>
+                        </div>
+                        {% endif %}
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">TVA (20%) :</span>
+                            <span class="text-sm font-medium text-gray-900">{{ commande.tva|floatformat:2 }} F CFA</span>
+                        </div>
+                        <div class="border-t pt-3">
+                            <div class="flex justify-between">
+                                <span class="text-base font-medium text-gray-900">Total :</span>
+                                <span class="text-base font-bold text-gray-900">{{ commande.total|floatformat:2 }} F CFA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations client -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Informations client</h2>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">{{ commande.client.get_full_name }}</p>
+                            {% if commande.client.email %}
+                            <p class="text-sm text-gray-600">{{ commande.client.email }}</p>
+                            {% endif %}
+                            {% if commande.client.telephone %}
+                            <p class="text-sm text-gray-600">{{ commande.client.telephone }}</p>
+                            {% endif %}
+                        </div>
+                        {% if commande.client.adresse %}
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Adresse :</p>
+                            <p class="text-sm text-gray-600">{{ commande.client.adresse }}</p>
+                            {% if commande.client.ville %}
+                            <p class="text-sm text-gray-600">
+                                {% if commande.client.code_postal %}{{ commande.client.code_postal }} {% endif %}{{ commande.client.ville }}
+                            </p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

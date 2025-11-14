@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bon de Commande {{ commande.numero_commande }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+        }
+        .company-info {
+            flex: 1;
+        }
+        .company-info h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #2563eb;
+        }
+        .document-info {
+            text-align: right;
+            flex: 1;
+        }
+        .document-info h2 {
+            margin: 0;
+            font-size: 18px;
+            background: #2563eb;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .client-info {
+            margin-bottom: 30px;
+        }
+        .client-info h3 {
+            margin-bottom: 10px;
+            font-size: 14px;
+            background: #f3f4f6;
+            padding: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .total-section {
+            width: 300px;
+            margin-left: auto;
+            margin-top: 20px;
+        }
+        .total-section table {
+            margin-bottom: 0;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+        .notes {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #2563eb;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .status-en-attente { background: #fef3c7; color: #92400e; }
+        .status-confirmee { background: #dbeafe; color: #1e40af; }
+        .status-expediee { background: #e0e7ff; color: #5b21b6; }
+        .status-livree { background: #d1fae5; color: #065f46; }
+        .status-annulee { background: #fee2e2; color: #991b1b; }
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-info">
+            <h1>GG STOCK</h1>
+            <p><strong>Système de Gestion d'Inventaire</strong></p>
+            <p>123 Rue de l'Entreprise<br>
+               75001 Paris, France<br>
+               Tél: +33 1 23 45 67 89<br>
+               Email: contact@ggstock.com</p>
+        </div>
+        <div class="document-info">
+            <h2>BON DE COMMANDE</h2>
+            <table>
+                <tr><td><strong>N° Commande:</strong></td><td>{{ commande.numero_commande }}</td></tr>
+                <tr><td><strong>Date:</strong></td><td>{{ commande.date_commande|date:"d/m/Y" }}</td></tr>
+                <tr><td><strong>Statut:</strong></td><td>
+                    <span class="status-badge status-{{ commande.statut|lower|cut:'_' }}">
+                        {{ commande.get_statut_display }}
+                    </span>
+                </td></tr>
+                {% if commande.date_livraison_prevue %}
+                <tr><td><strong>Livraison prévue:</strong></td><td>{{ commande.date_livraison_prevue|date:"d/m/Y" }}</td></tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+
+    <div class="client-info">
+        <h3>INFORMATIONS CLIENT</h3>
+        <p><strong>{{ commande.client.get_full_name }}</strong></p>
+        {% if commande.client.email %}<p>Email: {{ commande.client.email }}</p>{% endif %}
+        {% if commande.client.telephone %}<p>Téléphone: {{ commande.client.telephone }}</p>{% endif %}
+        {% if commande.client.adresse %}
+        <p>Adresse: {{ commande.client.adresse }}</p>
+        {% if commande.client.ville %}
+        <p>
+            {% if commande.client.code_postal %}{{ commande.client.code_postal }} {% endif %}{{ commande.client.ville }}
+        </p>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Référence</th>
+                <th>Produit</th>
+                <th class="text-center">Quantité</th>
+                <th class="text-right">Prix unitaire</th>
+                <th class="text-right">Sous-total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ligne in lignes %}
+            <tr>
+                <td>{{ ligne.produit.reference }}</td>
+                <td>{{ ligne.produit.nom }}</td>
+                <td class="text-center">{{ ligne.quantite }}</td>
+                <td class="text-right">{{ ligne.prix_unitaire|floatformat:2 }} F CFA</td>
+                <td class="text-right">{{ ligne.sous_total|floatformat:2 }} F CFA</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total-section">
+        <table>
+            <tr>
+                <td>Sous-total :</td>
+                <td class="text-right">{{ commande.sous_total|floatformat:2 }} F CFA</td>
+            </tr>
+            {% if commande.remise > 0 %}
+            <tr>
+                <td>Remise :</td>
+                <td class="text-right">-{{ commande.remise|floatformat:2 }} F CFA</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td>TVA (20%) :</td>
+                <td class="text-right">{{ commande.tva|floatformat:2 }} F CFA</td>
+            </tr>
+            <tr class="total-row">
+                <td><strong>TOTAL :</strong></td>
+                <td class="text-right"><strong>{{ commande.total|floatformat:2 }} F CFA</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    {% if commande.notes %}
+    <div class="notes">
+        <h4 style="margin-top: 0;">Notes :</h4>
+        <p>{{ commande.notes }}</p>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>GG STOCK - Système de Gestion d'Inventaire | Document généré le {{ "now"|date:"d/m/Y à H:i" }}</p>
+        <p>Ce bon de commande fait foi entre les parties. Merci de conserver ce document.</p>
+    </div>
+
+    <script>
+        // Auto-print pour les navigateurs qui le supportent
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

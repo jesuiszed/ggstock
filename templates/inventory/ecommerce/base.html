@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Zybio Market - Laboratoire Médical Africain{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles personnalisés pour le thème médical TINI@ELZA -->
+    <style>
+        /* Police Roboto pour tout le site */
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        /* Couleur principale - Bleu médical */
+        .bg-primary {
+            background-color: #2563EB;
+        }
+        
+        .text-primary {
+            color: #2563EB;
+        }
+        
+        .border-primary {
+            border-color: #2563EB;
+        }
+        
+        /* Boutons avec style médical bleu */
+        .btn-primary {
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+        
+        /* Animation de pulsation pour les éléments importants */
+        @keyframes pulse-medical {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .pulse-medical {
+            animation: pulse-medical 2s ease-in-out infinite;
+        }
+        
+        /* Cercle bleu pour l'image de fond */
+        .medical-circle {
+            background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+            border-radius: 50%;
+        }
+        
+        /* Info-bulle flottante */
+        .floating-info {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Scroll smooth */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Responsive design */
+        .hero-section {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        .title-large {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+        
+        .title-small {
+            font-size: 2.5rem;
+            font-weight: 400;
+        }
+        
+        @media (max-width: 768px) {
+            .title-large {
+                font-size: 2.5rem;
+            }
+            .title-small {
+                font-size: 1.8rem;
+            }
+        }
+        
+        /* Coche bleue pour les éléments de la liste */
+        .checkmark {
+            color: #2563EB;
+            font-weight: bold;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-white">
+    <!-- Navigation TINI@ELZA -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo Zybio Market -->
+                <div class="flex items-center">
+                    <a href="{% url 'inventory:ecommerce_home' %}" class="flex items-center">
+                        <div class="inline-flex items-center justify-center w-10 h-10 bg-primary rounded-xl mr-3 shadow-lg">
+                            <i class="fas fa-microscope text-white text-lg"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-xl font-bold text-gray-800">Zybio Market</span>
+                            <span class="text-xs text-blue-600 font-semibold">🇸🇳 Laboratoire Sénégal</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Menu navigation horizontal -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{% url 'inventory:ecommerce_home' %}" 
+                       class="text-gray-700 hover:text-blue-600 font-medium transition duration-200">
+                        Accueil
+                    </a>
+                    <a href="#about" 
+                       class="text-gray-700 hover:text-blue-600 font-medium transition duration-200">
+                        À Propos
+                    </a>
+                    <a href="{% url 'inventory:ecommerce_catalogue' %}" 
+                       class="text-gray-700 hover:text-blue-600 font-medium transition duration-200">
+                        Équipements
+                    </a>
+                </div>
+                
+                <!-- Bouton Contact -->
+                <div class="flex items-center">
+                    <a href="#contact" class="btn-primary hidden md:block">
+                        <i class="fas fa-phone mr-2"></i>Contact
+                    </a>
+                    
+                    <!-- Menu mobile -->
+                    <div class="md:hidden">
+                        <button type="button" class="mobile-menu-button text-gray-500 hover:text-gray-600 focus:outline-none" aria-label="toggle menu">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Menu mobile -->
+        <div class="mobile-menu hidden md:hidden">
+            <div class="px-4 pt-2 pb-3 space-y-2 bg-white border-t">
+                <a href="{% url 'inventory:ecommerce_home' %}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">Accueil</a>
+                <a href="#about" class="block px-3 py-2 text-gray-700 hover:text-blue-600">À Propos</a>
+                <a href="{% url 'inventory:ecommerce_catalogue' %}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">Équipements</a>
+                <div class="px-3 py-2">
+                    <a href="#contact" class="btn-primary w-full block text-center">
+                        <i class="fas fa-phone mr-2"></i>Contact
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            {% for message in messages %}
+                <div class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700 border border-red-300{% elif message.tags == 'success' %}bg-green-100 text-green-700 border border-green-300{% else %}bg-blue-100 text-blue-700 border border-blue-300{% endif %}">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-triangle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %} mr-2"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Contenu principal -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer Zybio Market -->
+    <footer class="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white relative overflow-hidden">
+        <!-- Motif africain en arrière-plan -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="h-full w-full bg-repeat" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22><g fill=%22%23fff%22><path d=%22M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z%22 opacity=%22.1%22/></g></svg>');"></div>
+        </div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Logo & Description -->
+                <div>
+                    <div class="flex items-center mb-6">
+                        <div class="inline-flex items-center justify-center w-12 h-12 bg-primary rounded-xl mr-4 shadow-lg">
+                            <i class="fas fa-microscope text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-xl font-bold">Zybio Market Sénégal</span>
+                            <p class="text-blue-300 text-sm">🏥 Partenaire des Laboratoires Africains</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Depuis 2 ans, nous équipons les laboratoires médicaux du Sénégal et de l'Afrique de l'Ouest 
+                        avec des technologies de pointe. Spécialistes en hématologie, biochimie et consommables.
+                    </p>
+                    <div class="flex space-x-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-600 text-white">
+                            <i class="fas fa-certificate mr-2"></i>Certifié ISO
+                        </span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-700 text-white">
+                            <i class="fas fa-shipping-fast mr-2"></i>Livraison 24h
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-blue-300">
+                        <i class="fas fa-sitemap mr-2"></i>Navigation
+                    </h3>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="{% url 'inventory:ecommerce_home' %}" class="text-gray-300 hover:text-blue-300 transition duration-200 flex items-center">
+                                <i class="fas fa-home mr-2 w-4"></i>Accueil
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#about" class="text-gray-300 hover:text-blue-300 transition duration-200 flex items-center">
+                                <i class="fas fa-info-circle mr-2 w-4"></i>À Propos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'inventory:ecommerce_catalogue' %}" class="text-gray-300 hover:text-blue-300 transition duration-200 flex items-center">
+                                <i class="fas fa-microscope mr-2 w-4"></i>Équipements
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#contact" class="text-gray-300 hover:text-blue-300 transition duration-200 flex items-center">
+                                <i class="fas fa-phone mr-2 w-4"></i>Contact
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Dakar -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-blue-300">
+                        <i class="fas fa-phone mr-2"></i>Contact Dakar
+                    </h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-3 text-blue-400 w-4"></i>
+                            <a href="mailto:contact@zybiomarket.com" class="hover:text-blue-300 transition duration-200">
+                                contact@zybiomarket.com
+                            </a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-3 text-blue-400 w-4"></i>
+                            <a href="tel:+221763692167" class="hover:text-blue-300 transition duration-200 font-semibold">
+                                +221 76 369 21 67
+                            </a>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-3 text-blue-400 w-4 mt-1"></i>
+                            <div>
+                                <p>Zone Industrielle de Diamniadio</p>
+                                <p class="text-sm text-gray-400">Dakar, Sénégal 🇸🇳</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock mr-3 text-blue-400 w-4"></i>
+                            <div class="text-sm">
+                                <p>Lun-Ven: 8h-18h</p>
+                                <p class="text-gray-400">Sam: 8h-13h</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Barre de copyright -->
+            <div class="border-t border-gray-700 mt-8 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 mb-4 md:mb-0">
+                        &copy; 2025 Zybio Market Sénégal. Tous droits réservés.
+                    </p>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-400">Fièrement sénégalais 🇸🇳</span>
+                        <div class="flex space-x-2">
+                            <a href="#" class="text-gray-400 hover:text-blue-400 transition duration-200">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-blue-400 transition duration-200">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-blue-400 transition duration-200">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Menu mobile toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

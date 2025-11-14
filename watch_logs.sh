@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "📡 SURVEILLANCE DES LOGS EN TEMPS RÉEL"
+echo "======================================"
+echo ""
+echo "🎯 Instructions:"
+echo "   1. Allez sur: http://127.0.0.1:8000/inventory/commandes/nouvelle/"
+echo "   2. Créez une commande avec 1-3 produits"
+echo "   3. Observez les logs ci-dessous"
+echo ""
+echo "✅ Logs ATTENDUS (nouveau code):"
+echo "   === DEBUG COMMANDE_CREATE ==="
+echo "   Lignes trouvées: ['0', '1']"
+echo "   Traitement ligne 0: produit=XX"
+echo "   ✓ Ligne 0 créée: [Produit] x 1"
+echo ""
+echo "❌ Si vous voyez (ancien code):"
+echo "   Recherche des clés: ligne_0_produit"
+echo "   → ALERTEZ immédiatement!"
+echo ""
+echo "----------------------------------------"
+echo "📋 Logs en direct:"
+echo "----------------------------------------"
+echo ""
+
+tail -f django_server.log

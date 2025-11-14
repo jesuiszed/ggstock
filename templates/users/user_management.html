@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestion des Utilisateurs{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
+        <p class="mt-2 text-gray-600">Gérez les utilisateurs et leurs rôles dans le système.</p>
+    </div>
+
+    <!-- Résumé des rôles -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-purple-50 p-6 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-crown text-white text-sm"></i>
+                    </div>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-purple-800">Managers</p>
+                    <p class="text-xl font-semibold text-purple-900">
+                        {{ users|length|add:"-3" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-blue-50 p-6 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-store text-white text-sm"></i>
+                    </div>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-blue-800">Commercial Showroom</p>
+                    <p class="text-xl font-semibold text-blue-900">
+                        {% for user in users %}{% if user.profile.role == 'COMMERCIAL_SHOWROOM' %}{{ forloop.counter0|add:"1" }}{% endif %}{% endfor %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-green-50 p-6 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-road text-white text-sm"></i>
+                    </div>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-green-800">Commercial Terrain</p>
+                    <p class="text-xl font-semibold text-green-900">
+                        {% for user in users %}{% if user.profile.role == 'COMMERCIAL_TERRAIN' %}{{ forloop.counter0|add:"1" }}{% endif %}{% endfor %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-orange-50 p-6 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-tools text-white text-sm"></i>
+                    </div>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-orange-800">Techniciens</p>
+                    <p class="text-xl font-semibold text-orange-900">
+                        {% for user in users %}{% if user.profile.role == 'TECHNICIEN' %}{{ forloop.counter0|add:"1" }}{% endif %}{% endfor %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des utilisateurs -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                Liste des Utilisateurs
+            </h3>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Utilisateur
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Rôle
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Statut
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Dernière connexion
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for user in users %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                            <i class="fas fa-user text-gray-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ user.get_full_name|default:user.username }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">@{{ user.username }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                             {% if user.profile.role == 'MANAGER' %}bg-purple-100 text-purple-800
+                                             {% elif user.profile.role == 'COMMERCIAL_SHOWROOM' %}bg-blue-100 text-blue-800
+                                             {% elif user.profile.role == 'COMMERCIAL_TERRAIN' %}bg-green-100 text-green-800
+                                             {% elif user.profile.role == 'TECHNICIEN' %}bg-orange-100 text-orange-800
+                                             {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ user.profile.get_role_display }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ user.email|default:"Non défini" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if user.is_active %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Inactif
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ user.last_login|date:"d/m/Y H:i"|default:"Jamais" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    {% if user != request.user %}
+                                        <a href="#" class="text-indigo-600 hover:text-indigo-900">Modifier</a>
+                                        {% if user.is_active %}
+                                            <a href="#" class="text-red-600 hover:text-red-900">Désactiver</a>
+                                        {% else %}
+                                            <a href="#" class="text-green-600 hover:text-green-900">Activer</a>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-gray-400">Vous</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                Aucun utilisateur trouvé.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations sur les rôles -->
+    <div class="mt-8 bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                Description des Rôles
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="border-l-4 border-purple-500 pl-4">
+                    <h4 class="text-md font-semibold text-purple-800">Manager (Administrateur)</h4>
+                    <p class="text-sm text-gray-600 mt-1">
+                        Accès complet au système : gestion des utilisateurs, produits, stock, ventes, commandes, clients et analyses.
+                    </p>
+                </div>
+                
+                <div class="border-l-4 border-blue-500 pl-4">
+                    <h4 class="text-md font-semibold text-blue-800">Commercial Showroom (Type 1)</h4>
+                    <p class="text-sm text-gray-600 mt-1">
+                        Spécialisé dans les ventes en showroom : gestion des produits et des ventes directes.
+                    </p>
+                </div>
+                
+                <div class="border-l-4 border-green-500 pl-4">
+                    <h4 class="text-md font-semibold text-green-800">Commercial Terrain (Type 2)</h4>
+                    <p class="text-sm text-gray-600 mt-1">
+                        Gestion des clients sur le terrain : commandes, relations clients et suivi commercial.
+                    </p>
+                </div>
+                
+                <div class="border-l-4 border-orange-500 pl-4">
+                    <h4 class="text-md font-semibold text-orange-800">Technicien</h4>
+                    <p class="text-sm text-gray-600 mt-1">
+                        Responsable du stock et du service après-vente : gestion des inventaires et support technique.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-8 flex justify-between">
+        <a href="{% url 'inventory:dashboard' %}" 
+           class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            Retour au tableau de bord
+        </a>
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Ajouter un utilisateur
+        </button>
+    </div>
+</div>
+{% endblock %}

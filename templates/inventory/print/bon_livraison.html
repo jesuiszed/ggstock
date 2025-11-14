@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bon de Livraison {{ commande.numero_commande }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+        }
+        .company-info {
+            flex: 1;
+        }
+        .company-info h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #059669;
+        }
+        .document-info {
+            text-align: right;
+            flex: 1;
+        }
+        .document-info h2 {
+            margin: 0;
+            font-size: 18px;
+            background: #059669;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .client-info {
+            margin-bottom: 30px;
+        }
+        .client-info h3 {
+            margin-bottom: 10px;
+            font-size: 14px;
+            background: #f3f4f6;
+            padding: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .signature-section {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature-box {
+            width: 250px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+        .signature-box h4 {
+            margin: 0 0 30px 0;
+            font-size: 12px;
+        }
+        .signature-line {
+            border-bottom: 1px solid #000;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        .notes {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #059669;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        .delivery-info {
+            background: #ecfdf5;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #059669;
+        }
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-info">
+            <h1>GG STOCK</h1>
+            <p><strong>Système de Gestion d'Inventaire</strong></p>
+            <p>123 Rue de l'Entreprise<br>
+               75001 Paris, France<br>
+               Tél: +33 1 23 45 67 89<br>
+               Email: contact@ggstock.com</p>
+        </div>
+        <div class="document-info">
+            <h2>BON DE LIVRAISON</h2>
+            <table>
+                <tr><td><strong>N° Commande:</strong></td><td>{{ commande.numero_commande }}</td></tr>
+                <tr><td><strong>Date commande:</strong></td><td>{{ commande.date_commande|date:"d/m/Y" }}</td></tr>
+                <tr><td><strong>Date livraison:</strong></td><td>{{ "now"|date:"d/m/Y" }}</td></tr>
+                {% if commande.date_livraison_prevue %}
+                <tr><td><strong>Livraison prévue:</strong></td><td>{{ commande.date_livraison_prevue|date:"d/m/Y" }}</td></tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+
+    <div class="delivery-info">
+        <h3 style="margin: 0 0 10px 0; color: #059669;">INFORMATIONS DE LIVRAISON</h3>
+        <p><strong>Mode de livraison:</strong> Standard</p>
+        <p><strong>Transporteur:</strong> GG STOCK Express</p>
+        <p><strong>Délai estimé:</strong> 2-3 jours ouvrés</p>
+    </div>
+
+    <div class="client-info">
+        <h3>ADRESSE DE LIVRAISON</h3>
+        <p><strong>{{ commande.client.get_full_name }}</strong></p>
+        {% if commande.client.email %}<p>Email: {{ commande.client.email }}</p>{% endif %}
+        {% if commande.client.telephone %}<p>Téléphone: {{ commande.client.telephone }}</p>{% endif %}
+        {% if commande.client.adresse %}
+        <p>{{ commande.client.adresse }}</p>
+        {% if commande.client.ville %}
+        <p><strong>
+            {% if commande.client.code_postal %}{{ commande.client.code_postal }} {% endif %}{{ commande.client.ville }}
+        </strong></p>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Référence</th>
+                <th>Produit</th>
+                <th class="text-center">Quantité à livrer</th>
+                <th class="text-center">Quantité livrée</th>
+                <th>Observations</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ligne in lignes %}
+            <tr>
+                <td>{{ ligne.produit.reference }}</td>
+                <td>{{ ligne.produit.nom }}</td>
+                <td class="text-center">{{ ligne.quantite }}</td>
+                <td class="text-center" style="border-bottom: 1px solid #000; min-height: 30px;"></td>
+                <td style="border-bottom: 1px solid #000; min-height: 30px;"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="signature-section">
+        <div class="signature-box">
+            <h4>SIGNATURE DU LIVREUR</h4>
+            <div class="signature-line"></div>
+            <p>Nom: ____________________</p>
+            <p>Date: {{ "now"|date:"d/m/Y" }}</p>
+        </div>
+        <div class="signature-box">
+            <h4>SIGNATURE DU DESTINATAIRE</h4>
+            <div class="signature-line"></div>
+            <p>Nom: ____________________</p>
+            <p>Date: ____________________</p>
+        </div>
+    </div>
+
+    {% if commande.notes %}
+    <div class="notes">
+        <h4 style="margin-top: 0;">Notes de livraison :</h4>
+        <p>{{ commande.notes }}</p>
+    </div>
+    {% endif %}
+
+    <div style="margin-top: 30px; padding: 15px; background: #fef3c7; border-left: 4px solid #f59e0b;">
+        <h4 style="margin: 0 0 10px 0; color: #92400e;">Instructions importantes :</h4>
+        <ul style="margin: 0; padding-left: 20px;">
+            <li>Vérifier l'état des produits à la réception</li>
+            <li>Signaler immédiatement tout dommage ou manquant</li>
+            <li>Conserver ce bon de livraison signé</li>
+            <li>Réclamations sous 48h maximum</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>GG STOCK - Système de Gestion d'Inventaire | Bon de livraison généré le {{ "now"|date:"d/m/Y à H:i" }}</p>
+        <p>Ce document fait foi pour la livraison. Merci de le signer et de le conserver.</p>
+    </div>
+
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

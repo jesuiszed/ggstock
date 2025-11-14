@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Appareils Vendus{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Appareils Vendus</h1>
+        <div class="flex space-x-3">
+            <a href="{% url 'inventory:intervention_create' %}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                <i class="fas fa-tools mr-2"></i>Nouvelle Intervention
+            </a>
+        </div>
+    </div>
+
+    <!-- Alertes maintenance -->
+    {% if maintenance_due_count > 0 %}
+    <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-red-400 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">
+                    Maintenance Due
+                </h3>
+                <div class="mt-2 text-sm text-red-700">
+                    <p>{{ maintenance_due_count }} appareil{{ maintenance_due_count|pluralize }} nécessite{{ maintenance_due_count|pluralize:"nt" }} une maintenance.</p>
+                    <a href="?maintenance_due=true" class="font-medium underline text-red-800 hover:text-red-600">
+                        Voir les appareils concernés
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Filtres et recherche -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+            <form method="get" class="flex flex-wrap items-center gap-4">
+                <div class="flex-1 min-w-64">
+                    <input type="text" name="search" value="{{ search }}" placeholder="Rechercher par numéro série, produit, client..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <select name="statut" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Tous les statuts</option>
+                        {% for value, label in statut_choices %}
+                            <option value="{{ value }}" {% if current_statut == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="maintenance_due" value="true" {% if request.GET.maintenance_due %}checked{% endif %}
+                               class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <span class="text-sm text-gray-700">Maintenance due</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-search mr-2"></i>Filtrer
+                </button>
+                
+                <a href="{% url 'inventory:appareil_list' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-times mr-2"></i>Réinitialiser
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des appareils -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul class="divide-y divide-gray-200">
+            {% for appareil in appareils %}
+            <li>
+                <a href="{% url 'inventory:appareil_detail' appareil.pk %}" class="block hover:bg-gray-50">
+                    <div class="px-4 py-4 sm:px-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-laptop-medical text-gray-400 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-indigo-600">{{ appareil.produit.nom }}</div>
+                                    <div class="text-sm text-gray-500">
+                                        N° Série: {{ appareil.numero_serie }} • {{ appareil.client.nom_complet }}
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        Installé le {{ appareil.date_installation|date:"d/m/Y" }} à {{ appareil.lieu_installation }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-right">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        Prochaine maintenance: {{ appareil.prochaine_maintenance_preventive|date:"d/m/Y" }}
+                                        {% if appareil.est_maintenance_due %}
+                                            <span class="text-red-600"><i class="fas fa-exclamation-triangle ml-1"></i></span>
+                                        {% endif %}
+                                    </div>
+                                    {% if appareil.technicien_responsable %}
+                                        <div class="text-sm text-gray-500">{{ appareil.technicien_responsable.get_full_name }}</div>
+                                    {% endif %}
+                                </div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if appareil.statut == 'INSTALLE' %}bg-blue-100 text-blue-800
+                                    {% elif appareil.statut == 'EN_SERVICE' %}bg-green-100 text-green-800
+                                    {% elif appareil.statut == 'MAINTENANCE' %}bg-yellow-100 text-yellow-800
+                                    {% elif appareil.statut == 'PANNE' %}bg-red-100 text-red-800
+                                    {% elif appareil.statut == 'HORS_SERVICE' %}bg-gray-100 text-gray-800
+                                    {% endif %}">
+                                    {{ appareil.get_statut_display }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions rapides -->
+                        <div class="mt-2 flex items-center space-x-4">
+                            <a href="{% url 'inventory:intervention_create' %}?appareil={{ appareil.pk }}" 
+                               class="text-sm text-indigo-600 hover:text-indigo-900 flex items-center"
+                               onclick="event.stopPropagation();">
+                                <i class="fas fa-tools mr-1"></i>Planifier intervention
+                            </a>
+                            
+                            {% if appareil.est_maintenance_due %}
+                            <span class="text-sm text-red-600 flex items-center">
+                                <i class="fas fa-clock mr-1"></i>Maintenance urgente
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </li>
+            {% empty %}
+            <li class="p-8 text-center text-gray-500">
+                <i class="fas fa-laptop-medical text-4xl mb-4"></i>
+                <p>Aucun appareil trouvé</p>
+                <p class="text-sm mt-2">Les appareils apparaîtront ici après les ventes</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Pagination -->
+    {% if appareils.has_other_pages %}
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6">
+        <div class="flex-1 flex justify-between sm:hidden">
+            {% if appareils.has_previous %}
+                <a href="?page={{ appareils.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Précédent
+                </a>
+            {% endif %}
+            {% if appareils.has_next %}
+                <a href="?page={{ appareils.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                   class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Suivant
+                </a>
+            {% endif %}
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700">
+                    Affichage de <span class="font-medium">{{ appareils.start_index }}</span> à <span class="font-medium">{{ appareils.end_index }}</span>
+                    sur <span class="font-medium">{{ appareils.paginator.count }}</span> résultats
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if appareils.has_previous %}
+                        <a href="?page={{ appareils.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in appareils.paginator.page_range %}
+                        {% if appareils.number == num %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if appareils.has_next %}
+                        <a href="?page={{ appareils.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

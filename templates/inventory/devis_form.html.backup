@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- En-tête -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ title }}</h1>
+                <p class="text-gray-600 mt-1">Créer ou modifier un devis client</p>
+            </div>
+            <a href="{% url 'inventory:devis_list' %}" 
+               class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Retour
+            </a>
+        </div>
+
+        <form id="devisForm" method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Informations générales -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                    Informations générales
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.client.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Client <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.client }}
+                        {% if form.client.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.client.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.date_validite.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Date de validité <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.date_validite }}
+                        {% if form.date_validite.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.date_validite.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produits (Formset) -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-box text-green-600 mr-2"></i>
+                        Produits du devis
+                    </h3>
+                    <button type="button" id="add-line" 
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200">
+                        <i class="fas fa-plus mr-2"></i>Ajouter un produit
+                    </button>
+                </div>
+
+                <!-- Management form (OBLIGATOIRE) -->
+                {{ formset.management_form }}
+
+                <!-- Container pour les lignes -->
+                <div id="lines-container" class="space-y-4">
+                    {% for form in formset %}
+                    <div class="ligne-devis bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-start justify-between mb-3">
+                            <h4 class="text-sm font-medium text-gray-700">
+                                <i class="fas fa-box mr-1"></i>Ligne #<span class="line-number">{{ forloop.counter }}</span>
+                            </h4>
+                            {% if not forloop.first or formset.forms|length > 1 %}
+                            <button type="button" class="remove-line text-red-600 hover:text-red-800 transition">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <!-- Produit (5 colonnes) -->
+                            <div class="md:col-span-5">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">
+                                    Produit <span class="text-red-500">*</span>
+                                </label>
+                                {{ form.produit }}
+                                {% if form.produit.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.produit.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Quantité (2 colonnes) -->
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">
+                                    Quantité <span class="text-red-500">*</span>
+                                </label>
+                                {{ form.quantite }}
+                                {% if form.quantite.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.quantite.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Prix unitaire (2 colonnes) -->
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">
+                                    Prix unit. (F CFA) <span class="text-red-500">*</span>
+                                </label>
+                                {{ form.prix_unitaire }}
+                                {% if form.prix_unitaire.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.prix_unitaire.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Remise (1 colonne) -->
+                            <div class="md:col-span-1">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">
+                                    Remise (%)
+                                </label>
+                                {{ form.remise }}
+                                {% if form.remise.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.remise.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Sous-total (2 colonnes) -->
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Sous-total</label>
+                                <div class="text-lg font-bold text-blue-600 mt-2 subtotal-display">0 F CFA</div>
+                            </div>
+                        </div>
+
+                        <!-- Champs cachés -->
+                        <div class="hidden">
+                            {{ form.DELETE }}
+                            {{ form.id }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Récapitulatif -->
+                <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-600">
+                            <span id="total-lines">{{ formset.forms|length }}</span> ligne(s) - 
+                            <span id="total-items">0</span> produit(s)
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm text-gray-600">Total HT</div>
+                            <div id="total-ht" class="text-xl font-bold text-gray-900">0 F CFA</div>
+                            <div class="text-xs text-gray-500 mt-1">Remise: <span id="total-remise">0</span> F CFA</div>
+                            <div class="text-sm text-gray-600 mt-2">Total TTC</div>
+                            <div id="total-ttc" class="text-2xl font-bold text-blue-600">0 F CFA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Notes et conditions</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Notes
+                        </label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.notes.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.conditions_particulieres.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Conditions particulières
+                        </label>
+                        {{ form.conditions_particulieres }}
+                        {% if form.conditions_particulieres.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.conditions_particulieres.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="flex justify-end space-x-4">
+                <a href="{% url 'inventory:devis_list' %}" 
+                   class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition duration-200">
+                    <i class="fas fa-times mr-2"></i>Annuler
+                </a>
+                <button type="submit" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200">
+                    <i class="fas fa-save mr-2"></i>Enregistrer le devis
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Template pour nouvelle ligne (caché) -->
+<template id="ligne-template">
+    <div class="ligne-devis bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <div class="flex items-start justify-between mb-3">
+            <h4 class="text-sm font-medium text-gray-700">
+                <i class="fas fa-box mr-1"></i>Ligne #<span class="line-number"></span>
+            </h4>
+            <button type="button" class="remove-line text-red-600 hover:text-red-800 transition">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div class="md:col-span-5">
+                <label class="block text-xs font-medium text-gray-600 mb-1">
+                    Produit <span class="text-red-500">*</span>
+                </label>
+                <select name="__prefix__-produit" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="">Sélectionnez un produit...</option>
+                </select>
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">
+                    Quantité <span class="text-red-500">*</span>
+                </label>
+                <input type="number" name="__prefix__-quantite" min="1" value="1" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md">
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">
+                    Prix unit. (F CFA) <span class="text-red-500">*</span>
+                </label>
+                <input type="number" name="__prefix__-prix_unitaire" step="0.01" min="0" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md">
+            </div>
+
+            <div class="md:col-span-1">
+                <label class="block text-xs font-medium text-gray-600 mb-1">
+                    Remise (%)
+                </label>
+                <input type="number" name="__prefix__-remise" step="0.01" min="0" max="100" value="0" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md">
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Sous-total</label>
+                <div class="text-lg font-bold text-blue-600 mt-2 subtotal-display">0 F CFA</div>
+            </div>
+        </div>
+
+        <div class="hidden">
+            <input type="checkbox" name="__prefix__-DELETE" id="id___prefix__-DELETE">
+        </div>
+    </div>
+</template>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('lines-container');
+    const addButton = document.getElementById('add-line');
+    const totalFormsInput = document.querySelector('[name$="-TOTAL_FORMS"]');
+    
+    // Charger les données des produits depuis le contexte Django
+    const produitsData = {{ produits_data_json|safe }};
+    const produitsMap = {};
+    produitsData.forEach(p => {
+        produitsMap[p.id] = p;
+    });
+    
+    console.log('=== INIT DEVIS FORMSET ===');
+    console.log('Total forms initial:', totalFormsInput.value);
+    console.log('Produits chargés:', produitsData.length);
+    
+    // Fonction pour mettre à jour les numéros de ligne
+    function updateLineNumbers() {
+        const visibleLines = Array.from(document.querySelectorAll('.ligne-devis')).filter(l => l.style.display !== 'none');
+        visibleLines.forEach((ligne, index) => {
+            ligne.querySelector('.line-number').textContent = index + 1;
+        });
+        document.getElementById('total-lines').textContent = visibleLines.length;
+    }
+    
+    // Fonction pour calculer le sous-total d'une ligne avec remise
+    function calculateSubtotal(ligne) {
+        const quantite = parseFloat(ligne.querySelector('[name$="-quantite"]').value) || 0;
+        const prix = parseFloat(ligne.querySelector('[name$="-prix_unitaire"]').value) || 0;
+        const remise = parseFloat(ligne.querySelector('[name$="-remise"]').value) || 0;
+        
+        const total = quantite * prix;
+        const montantRemise = total * (remise / 100);
+        const subtotal = total - montantRemise;
+        
+        ligne.querySelector('.subtotal-display').textContent = subtotal.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' F CFA';
+        calculateTotal();
+    }
+    
+    // Fonction pour calculer le total général
+    function calculateTotal() {
+        let totalHT = 0;
+        let totalRemise = 0;
+        let totalItems = 0;
+        
+        document.querySelectorAll('.ligne-devis').forEach(ligne => {
+            if (ligne.style.display !== 'none') {
+                const quantite = parseFloat(ligne.querySelector('[name$="-quantite"]').value) || 0;
+                const prix = parseFloat(ligne.querySelector('[name$="-prix_unitaire"]').value) || 0;
+                const remise = parseFloat(ligne.querySelector('[name$="-remise"]').value) || 0;
+                
+                const total = quantite * prix;
+                const montantRemise = total * (remise / 100);
+                
+                totalHT += total;
+                totalRemise += montantRemise;
+                totalItems += quantite;
+            }
+        });
+        
+        const totalNet = totalHT - totalRemise;
+        const tva = totalNet * 0.18; // TVA 18%
+        const totalTTC = totalNet + tva;
+        
+        document.getElementById('total-ht').textContent = totalHT.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' F CFA';
+        document.getElementById('total-remise').textContent = totalRemise.toLocaleString('fr-FR', {minimumFractionDigits: 2});
+        document.getElementById('total-ttc').textContent = totalTTC.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' F CFA';
+        document.getElementById('total-items').textContent = totalItems;
+    }
+    
+    // Ajouter une nouvelle ligne
+    addButton.addEventListener('click', function() {
+        const totalForms = parseInt(totalFormsInput.value);
+        const template = document.getElementById('ligne-template').content.cloneNode(true);
+        
+        console.log('Ajout ligne formset ' + totalForms);
+        
+        // Remplacer __prefix__ par le numéro de formulaire
+        const newForm = template.querySelector('.ligne-devis');
+        newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, 'form-' + totalForms);
+        
+        // Copier les options de produit avec data-prix
+        const newSelect = newForm.querySelector('select[name$="-produit"]');
+        newSelect.innerHTML = '<option value="">Sélectionnez un produit...</option>';
+        produitsData.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            option.textContent = p.nom;
+            option.dataset.prix = p.prix_vente;
+            option.dataset.stock = p.stock;
+            newSelect.appendChild(option);
+        });
+        
+        container.appendChild(newForm);
+        totalFormsInput.value = totalForms + 1;
+        
+        setupLineEvents(container.lastElementChild);
+        updateLineNumbers();
+        calculateTotal();
+    });
+    
+    // Configuration des événements pour une ligne
+    function setupLineEvents(ligne) {
+        const produitSelect = ligne.querySelector('[name$="-produit"]');
+        const quantiteInput = ligne.querySelector('[name$="-quantite"]');
+        const prixInput = ligne.querySelector('[name$="-prix_unitaire"]');
+        const remiseInput = ligne.querySelector('[name$="-remise"]');
+        const removeButton = ligne.querySelector('.remove-line');
+        
+        // Changement de produit - remplir automatiquement le prix
+        if (produitSelect) {
+            produitSelect.addEventListener('change', function() {
+                const produitId = parseInt(this.value);
+                if (produitId && produitsMap[produitId]) {
+                    const produit = produitsMap[produitId];
+                    prixInput.value = produit.prix_vente.toFixed(2);
+                    console.log('Produit ' + produit.nom + ' sélectionné - Prix: ' + produit.prix_vente + ' F CFA');
+                } else {
+                    prixInput.value = '';
+                }
+                calculateSubtotal(ligne);
+            });
+        }
+        
+        // Changement de quantité, prix ou remise
+        quantiteInput.addEventListener('input', function() { calculateSubtotal(ligne); });
+        prixInput.addEventListener('input', function() { calculateSubtotal(ligne); });
+        remiseInput.addEventListener('input', function() { calculateSubtotal(ligne); });
+        
+        // Suppression de ligne
+        if (removeButton) {
+            removeButton.addEventListener('click', function() {
+                const deleteCheckbox = ligne.querySelector('[name$="-DELETE"]');
+                if (deleteCheckbox) {
+                    deleteCheckbox.checked = true;
+                    ligne.style.display = 'none';
+                } else {
+                    ligne.remove();
+                }
+                updateLineNumbers();
+                calculateTotal();
+            });
+        }
+    }
+    
+    // Ajouter data-prix aux options existantes du premier select
+    document.querySelectorAll('select[name$="-produit"]').forEach(function(select) {
+        Array.from(select.options).forEach(function(option) {
+            if (option.value) {
+                const produitId = parseInt(option.value);
+                if (produitsMap[produitId]) {
+                    option.dataset.prix = produitsMap[produitId].prix_vente;
+                    option.dataset.stock = produitsMap[produitId].stock;
+                }
+            }
+        });
+    });
+    
+    // Initialiser les événements pour les lignes existantes
+    document.querySelectorAll('.ligne-devis').forEach(setupLineEvents);
+    
+    // Calculer le total initial
+    calculateTotal();
+    updateLineNumbers();
+    
+    // Validation avant soumission
+    document.getElementById('devisForm').addEventListener('submit', function(e) {
+        console.log('=== SOUMISSION FORMULAIRE DEVIS ===');
+        const visibleLines = Array.from(document.querySelectorAll('.ligne-devis')).filter(function(l) { return l.style.display !== 'none'; });
+        
+        if (visibleLines.length === 0) {
+            e.preventDefault();
+            alert('Veuillez ajouter au moins un produit au devis.');
+            return false;
+        }
+        
+        let hasValidProduct = false;
+        visibleLines.forEach(function(ligne, index) {
+            const produit = ligne.querySelector('[name$="-produit"]').value;
+            const quantite = ligne.querySelector('[name$="-quantite"]').value;
+            const prix = ligne.querySelector('[name$="-prix_unitaire"]').value;
+            
+            console.log('Ligne ' + index + ':', {produit: produit, quantite: quantite, prix: prix});
+            
+            if (produit && quantite && prix) {
+                hasValidProduct = true;
+            }
+        });
+        
+        if (!hasValidProduct) {
+            e.preventDefault();
+            alert('Veuillez remplir au moins une ligne de produit complète.');
+            return false;
+        }
+        
+        console.log('Formulaire valide - soumission...');
+    });
+});
+</script>
+{% endblock %}

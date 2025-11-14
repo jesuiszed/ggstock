@@ -1,0 +1,489 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bon de Commande {{ commande.numero_commande }}</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .company-info {
+            float: left;
+            width: 50%;
+        }
+        
+        .company-info h1 {
+            color: #007bff;
+            font-size: 24px;
+            margin: 0 0 10px 0;
+            font-weight: bold;
+        }
+        
+        .company-info p {
+            margin: 2px 0;
+            color: #666;
+        }
+        
+        .order-info {
+            float: right;
+            width: 45%;
+            text-align: right;
+        }
+        
+        .order-info h2 {
+            color: #007bff;
+            font-size: 28px;
+            margin: 0 0 10px 0;
+            font-weight: bold;
+        }
+        
+        .order-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .order-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .order-details td {
+            padding: 3px 0;
+            border: none;
+        }
+        
+        .order-details .label {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-en_attente {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-confirmee {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-expediee {
+            background: #cce5ff;
+            color: #004085;
+            border: 1px solid #99d3ff;
+        }
+        
+        .status-livree {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .status-annulee {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        
+        .client-info {
+            margin: 30px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .client-info h3 {
+            color: #28a745;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+        }
+        
+        .client-info p {
+            margin: 2px 0;
+        }
+        
+        .delivery-info {
+            margin: 30px 0;
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .delivery-info h3 {
+            color: #856404;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+        }
+        
+        .items-table th {
+            background: #007bff;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #007bff;
+        }
+        
+        .items-table td {
+            padding: 10px 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .items-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .items-table tbody tr:hover {
+            background: #e3f2fd;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .total-section {
+            float: right;
+            width: 300px;
+            margin-top: 20px;
+        }
+        
+        .total-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .total-table td {
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .total-table .label {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .total-table .total-row {
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            color: #666;
+            font-size: 11px;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .notes-section {
+            margin: 30px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #6c757d;
+            border-radius: 5px;
+        }
+        
+        .notes-section h4 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        
+        .conditions {
+            margin: 30px 0;
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 11px;
+        }
+        
+        .conditions h4 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        
+        .conditions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .conditions li {
+            margin: 3px 0;
+        }
+        
+        @media print {
+            body {
+                margin: 0;
+                padding: 15px;
+            }
+            
+            .order-info {
+                page-break-inside: avoid;
+            }
+            
+            .items-table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête -->
+    <div class="header clearfix">
+        <div class="company-info">
+            <h1>GGSTOCK Enterprise</h1>
+            <p><strong>Système de Gestion d'Inventaire</strong></p>
+            <p>123 Rue de l'Innovation</p>
+            <p>75001 Paris, France</p>
+            <p>Tél: +33 1 23 45 67 89</p>
+            <p>Email: contact@ggstock.com</p>
+            <p>SIRET: 123 456 789 00012</p>
+        </div>
+        
+        <div class="order-info">
+            <h2>BON DE COMMANDE</h2>
+            <div class="order-details">
+                <table>
+                    <tr>
+                        <td class="label">Numéro:</td>
+                        <td>{{ commande.numero_commande }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Date:</td>
+                        <td>{{ commande.date_commande|date:"d/m/Y" }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Heure:</td>
+                        <td>{{ commande.date_commande|time:"H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Commercial:</td>
+                        <td>{{ commande.utilisateur.get_full_name|default:commande.utilisateur.username }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Statut:</td>
+                        <td>
+                            <span class="status-badge status-{{ commande.statut|lower }}">
+                                {{ commande.get_statut_display }}
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations client -->
+    <div class="client-info">
+        <h3><i class="fas fa-user"></i> Informations Client</h3>
+        <p><strong>{{ commande.client.nom_complet }}</strong></p>
+        <p>{{ commande.client.email }}</p>
+        <p>{{ commande.client.telephone }}</p>
+        {% if commande.client.adresse %}
+            <p>{{ commande.client.adresse }}</p>
+            <p>{{ commande.client.code_postal }} {{ commande.client.ville }}</p>
+            <p>{{ commande.client.pays }}</p>
+        {% endif %}
+        {% if commande.client.entreprise %}
+            <p><strong>Entreprise:</strong> {{ commande.client.entreprise }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Informations de livraison -->
+    <div class="delivery-info">
+        <h3><i class="fas fa-truck"></i> Informations de Livraison</h3>
+        {% if commande.date_livraison_prevue %}
+            <p><strong>Date de livraison prévue:</strong> {{ commande.date_livraison_prevue|date:"d/m/Y" }}</p>
+        {% else %}
+            <p><strong>Date de livraison:</strong> À définir</p>
+        {% endif %}
+        
+        {% if commande.adresse_livraison %}
+            <p><strong>Adresse de livraison:</strong></p>
+            <p style="margin-left: 15px; white-space: pre-line;">{{ commande.adresse_livraison }}</p>
+        {% else %}
+            <p><strong>Adresse de livraison:</strong> Adresse du client</p>
+        {% endif %}
+    </div>
+
+    <!-- Détails des articles -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 40%">Article</th>
+                <th style="width: 15%" class="text-center">Qté</th>
+                <th style="width: 20%" class="text-right">Prix unitaire</th>
+                <th style="width: 25%" class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ligne in commande.lignecommande_set.all %}
+            <tr>
+                <td>
+                    <strong>{{ ligne.produit.nom }}</strong><br>
+                    <small style="color: #666;">Réf: {{ ligne.produit.reference }}</small>
+                    {% if ligne.produit.code_barre %}
+                        <br><small style="color: #666;">Code-barres: {{ ligne.produit.code_barre }}</small>
+                    {% endif %}
+                    {% if ligne.produit.description %}
+                        <br><small style="color: #666;">{{ ligne.produit.description|truncatechars:100 }}</small>
+                    {% endif %}
+                </td>
+                <td class="text-center">{{ ligne.quantite }}</td>
+                <td class="text-right">{{ ligne.prix_unitaire|floatformat:2 }} F CFA</td>
+                <td class="text-right">{{ ligne.sous_total|floatformat:2 }} F CFA</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center" style="padding: 30px; color: #999;">
+                    Aucun article dans cette commande
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Section totaux -->
+    <div class="clearfix">
+        <div class="total-section">
+            {% with commande.lignecommande_set.all as lignes %}
+            {% if lignes %}
+                <table class="total-table">
+                    <tr>
+                        <td class="label">Sous-total HT:</td>
+                        <td class="text-right">
+                            {% for ligne in lignes %}
+                                {% if forloop.first %}
+                                    {% widthratio ligne.sous_total|add:0 1 1 as subtotal %}
+                                    {% for l in lignes %}
+                                        {% if not forloop.first %}
+                                            {% widthratio subtotal|add:l.sous_total 1 1 as subtotal %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {{ subtotal|floatformat:2 }} F CFA
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">TVA (20%):</td>
+                        <td class="text-right">
+                            {% widthratio commande.total 20 100 as tva_amount %}{{ tva_amount|floatformat:2 }} F CFA
+                        </td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>TOTAL TTC:</td>
+                        <td class="text-right">{{ commande.total|floatformat:2 }} F CFA</td>
+                    </tr>
+                </table>
+            {% else %}
+                <table class="total-table">
+                    <tr class="total-row">
+                        <td>TOTAL TTC:</td>
+                        <td class="text-right">0,00 F CFA</td>
+                    </tr>
+                </table>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <!-- Notes -->
+    {% if commande.notes %}
+    <div class="notes-section">
+        <h4>📝 Notes et Instructions</h4>
+        <p>{{ commande.notes|linebreaks }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Conditions générales -->
+    <div class="conditions">
+        <h4>📋 Conditions de Commande</h4>
+        <ul>
+            <li><strong>Délais :</strong> Les délais de livraison sont donnés à titre indicatif et peuvent varier selon la disponibilité des produits.</li>
+            <li><strong>Prix :</strong> Les prix indiqués sont valables au moment de la commande et incluent la TVA applicable.</li>
+            <li><strong>Modifications :</strong> Toute modification de commande doit être confirmée par écrit avant expédition.</li>
+            <li><strong>Livraison :</strong> La livraison s'effectue à l'adresse indiquée ci-dessus. Le client doit être présent lors de la livraison.</li>
+            <li><strong>Garantie :</strong> Tous nos produits bénéficient de la garantie légale et/ou constructeur selon les conditions en vigueur.</li>
+        </ul>
+        
+        <p style="margin-top: 15px;">
+            <strong>Signature du client :</strong> En signant ce bon de commande, le client accepte les conditions générales de vente disponibles sur demande.
+        </p>
+        
+        <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+            <div style="width: 45%;">
+                <p style="border-bottom: 1px solid #999; padding-bottom: 20px; margin-top: 20px;"></p>
+                <p style="text-align: center; font-size: 10px;">Signature et cachet GGSTOCK</p>
+            </div>
+            <div style="width: 45%;">
+                <p style="border-bottom: 1px solid #999; padding-bottom: 20px; margin-top: 20px;"></p>
+                <p style="text-align: center; font-size: 10px;">Signature du client</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <div class="footer">
+        <p><strong>GGSTOCK Enterprise - Votre partenaire de confiance</strong></p>
+        <p>Ce bon de commande a été généré automatiquement le {{ "now"|date:"d/m/Y à H:i" }}</p>
+        <p>Pour toute question concernant cette commande : contact@ggstock.com | +33 1 23 45 67 89</p>
+        <p style="margin-top: 15px; font-size: 10px; color: #999;">
+            TVA non applicable - Art. 293 B du CGI | RCS Paris 123 456 789 | Ce document n'a de valeur qu'après signature des deux parties
+        </p>
+    </div>
+</body>
+</html>

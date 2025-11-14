@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- En-tête -->
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-shopping-cart text-blue-600 mr-3"></i>
+                {{ title }}
+            </h1>
+            <div class="flex space-x-3">
+                <a href="{% url 'inventory:commandes_list' %}" 
+                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                    <i class="fas fa-arrow-left mr-2"></i>Retour à la liste
+                </a>
+                <a href="{% url 'inventory:commande_create_advanced' %}" 
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200">
+                    <i class="fas fa-magic mr-2"></i>Version avancée
+                </a>
+            </div>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Messages d'erreur -->
+                {% if form.errors %}
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle text-red-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700 font-medium">Erreurs détectées :</p>
+                                <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+                                    {% for field, errors in form.errors.items %}
+                                        {% for error in errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Champs du formulaire -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Colonne gauche -->
+                    <div class="space-y-6">
+                        <!-- Numéro de commande -->
+                        <div>
+                            <label for="{{ form.numero_commande.id_for_label }}" 
+                                   class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-hashtag text-blue-500 mr-2"></i>{{ form.numero_commande.label }}
+                            </label>
+                            {{ form.numero_commande }}
+                            <p class="text-xs text-gray-500 mt-1">Numéro généré automatiquement</p>
+                        </div>
+                        
+                        <!-- Client -->
+                        <div>
+                            <label for="{{ form.client.id_for_label }}" 
+                                   class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user text-green-500 mr-2"></i>{{ form.client.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.client }}
+                        </div>
+                        
+                        <!-- Statut -->
+                        <div>
+                            <label for="{{ form.statut.id_for_label }}" 
+                                   class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-flag text-orange-500 mr-2"></i>{{ form.statut.label }}
+                            </label>
+                            {{ form.statut }}
+                            <p class="text-xs text-gray-500 mt-1">Statut actuel de la commande</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Colonne droite -->
+                    <div class="space-y-6">
+                        <!-- Date de livraison -->
+                        <div>
+                            <label for="{{ form.date_livraison_prevue.id_for_label }}" 
+                                   class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-calendar-alt text-purple-500 mr-2"></i>{{ form.date_livraison_prevue.label }}
+                            </label>
+                            {{ form.date_livraison_prevue }}
+                            {% if form.date_livraison_prevue.help_text %}
+                                <p class="text-xs text-gray-500 mt-1">{{ form.date_livraison_prevue.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Adresse de livraison -->
+                        <div>
+                            <label for="{{ form.adresse_livraison.id_for_label }}" 
+                                   class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>{{ form.adresse_livraison.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.adresse_livraison }}
+                            {% if form.adresse_livraison.help_text %}
+                                <p class="text-xs text-gray-500 mt-1">{{ form.adresse_livraison.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes (pleine largeur) -->
+                <div class="mt-8">
+                    <label for="{{ form.notes.id_for_label }}" 
+                           class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-sticky-note text-yellow-500 mr-2"></i>{{ form.notes.label }}
+                    </label>
+                    {{ form.notes }}
+                </div>
+
+                <!-- Informations importantes -->
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-8">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-lightbulb text-blue-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">
+                                <strong>Note :</strong> Ce formulaire crée uniquement l'en-tête de commande. 
+                                Pour ajouter des produits, utilisez la version avancée ou modifiez la commande après création.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="flex flex-col sm:flex-row justify-end items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200">
+                    <a href="{% url 'inventory:commandes_list' %}" 
+                       class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg transition duration-200 text-center font-medium">
+                        <i class="fas fa-times mr-2"></i>Annuler
+                    </a>
+                    <button type="submit" 
+                            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition duration-200 font-medium">
+                        <i class="fas fa-save mr-2"></i>Enregistrer la commande
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Aide contextuelle -->
+        <div class="mt-6 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                <i class="fas fa-question-circle text-gray-600 mr-2"></i>
+                Aide rapide
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div>
+                    <p><strong>Client :</strong> Obligatoire pour toute commande</p>
+                    <p><strong>Statut :</strong> En attente par défaut</p>
+                </div>
+                <div>
+                    <p><strong>Adresse de livraison :</strong> Obligatoire, sera remplie automatiquement</p>
+                    <p><strong>Date de livraison :</strong> Optionnelle, pour planification</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Animation pour les champs de formulaire */
+.form-control:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Hover effects pour les boutons */
+button:hover, .btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Style pour les labels avec icônes */
+label i {
+    width: 20px;
+    text-align: center;
+}
+</style>
+{% endblock %}

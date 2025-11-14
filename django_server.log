@@ -1,0 +1,836 @@
+Watching for file changes with StatReloader
+[13/Nov/2025 00:31:46] "GET /inventory/ HTTP/1.1" 302 0
+[13/Nov/2025 00:31:54] "GET /inventory/commandes/23/ HTTP/1.1" 200 15017
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 00:31:56.374118) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 00:31:56] "GET /inventory/commandes/ HTTP/1.1" 200 62376
+[13/Nov/2025 00:31:58] "GET /inventory/commandes/nouvelle/ HTTP/1.1" 200 27695
+[13/Nov/2025 00:32:10] "GET /inventory/commandes/nouvelle/ HTTP/1.1" 200 27695
+[13/Nov/2025 00:32:23] "POST /inventory/commandes/nouvelle/ HTTP/1.1" 302 0
+[13/Nov/2025 00:32:23] "GET /inventory/commandes/24/ HTTP/1.1" 200 15379
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 12:22:58.796556) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 12:22:59.294901) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 12:22:59.294901) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 12:22:58.796556) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 12:22:59] "GET /inventory/ HTTP/1.1" 200 14762
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 00:31:44
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:30:42
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:30:45
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:30:47
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:30:55
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:30:58
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:31:06
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:31:13
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/threading.py", line 1041, in _bootstrap_inner
+    self.run()
+    ~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/threading.py", line 992, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/utils/autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+    ~~^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/management/commands/runserver.py", line 134, in inner_run
+    self.check(**check_kwargs)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/management/base.py", line 492, in check
+    all_issues = checks.run_checks(
+        app_configs=app_configs,
+    ...<2 lines>...
+        databases=databases,
+    )
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/checks/registry.py", line 89, in run_checks
+    new_errors = check(app_configs=app_configs, databases=databases)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/checks/urls.py", line 44, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/checks/urls.py", line 63, in _load_all_namespaces
+    url_patterns = getattr(resolver, "url_patterns", [])
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/urls/resolvers.py", line 718, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+                       ^^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/urls/resolvers.py", line 711, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/enterprise_inventory/urls.py", line 30, in <module>
+    path("inventory/", include("inventory.urls")),
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/urls/conf.py", line 39, in include
+    urlconf_module = import_module(urlconf_module)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/urls.py", line 2, in <module>
+    from . import views
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py", line 193
+    'stats': {
+             ^
+SyntaxError: invalid syntax. Perhaps you forgot a comma?
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+Watching for file changes with StatReloader
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/threading.py", line 1041, in _bootstrap_inner
+    self.run()
+    ~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/threading.py", line 992, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/utils/autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+    ~~^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/management/commands/runserver.py", line 134, in inner_run
+    self.check(**check_kwargs)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/management/base.py", line 492, in check
+    all_issues = checks.run_checks(
+        app_configs=app_configs,
+    ...<2 lines>...
+        databases=databases,
+    )
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/checks/registry.py", line 89, in run_checks
+    new_errors = check(app_configs=app_configs, databases=databases)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/checks/urls.py", line 44, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/checks/urls.py", line 63, in _load_all_namespaces
+    url_patterns = getattr(resolver, "url_patterns", [])
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/urls/resolvers.py", line 718, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+                       ^^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/urls/resolvers.py", line 711, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/enterprise_inventory/urls.py", line 30, in <module>
+    path("inventory/", include("inventory.urls")),
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/urls/conf.py", line 39, in include
+    urlconf_module = import_module(urlconf_module)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/urls.py", line 2, in <module>
+    from . import views
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py", line 193
+    'stats': {
+             ^
+SyntaxError: invalid syntax. Perhaps you forgot a comma?
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+Watching for file changes with StatReloader
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/threading.py", line 1041, in _bootstrap_inner
+    self.run()
+    ~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/threading.py", line 992, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/utils/autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+    ~~^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/management/commands/runserver.py", line 134, in inner_run
+    self.check(**check_kwargs)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/management/base.py", line 492, in check
+    all_issues = checks.run_checks(
+        app_configs=app_configs,
+    ...<2 lines>...
+        databases=databases,
+    )
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/checks/registry.py", line 89, in run_checks
+    new_errors = check(app_configs=app_configs, databases=databases)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/checks/urls.py", line 44, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/checks/urls.py", line 63, in _load_all_namespaces
+    url_patterns = getattr(resolver, "url_patterns", [])
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/urls/resolvers.py", line 718, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+                       ^^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/urls/resolvers.py", line 711, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/enterprise_inventory/urls.py", line 30, in <module>
+    path("inventory/", include("inventory.urls")),
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/urls/conf.py", line 39, in include
+    urlconf_module = import_module(urlconf_module)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/urls.py", line 2, in <module>
+    from . import views
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py", line 193
+    'stats': {
+             ^
+SyntaxError: invalid syntax. Perhaps you forgot a comma?
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 12:31:31.300094) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 12:31:31.309154) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 12:31:31.309154) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 12:31:31.300094) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 12:31:31] "GET /inventory/ HTTP/1.1" 200 14762
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 12:31:33.150476) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 12:31:33.151793) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 12:31:33.151793) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 12:31:33.150476) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 12:31:33] "GET /inventory/ HTTP/1.1" 200 14762
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:31:27
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 12:32:12.952574) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 12:32:12.957632) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 12:32:12.957632) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 12:32:12.952574) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 12:32:13] "GET /inventory/ HTTP/1.1" 200 14762
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:32:12
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:34:24
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:34:29
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 12:34:50.618216) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 12:34:50.623968) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 12:34:50.623968) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 12:34:50.618216) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 12:34:50] "GET /inventory/ HTTP/1.1" 200 18052
+[13/Nov/2025 12:36:59] "GET /users/logout/ HTTP/1.1" 302 0
+[13/Nov/2025 12:36:59] "GET /users/login/ HTTP/1.1" 200 8160
+[13/Nov/2025 12:37:05] "POST /users/login/ HTTP/1.1" 302 0
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 12:37:05.361485) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 12:37:05.363377) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 12:37:05.363377) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 12:37:05] "GET /inventory/ HTTP/1.1" 200 18792
+[13/Nov/2025 12:37:26] "GET /users/logout/ HTTP/1.1" 302 0
+[13/Nov/2025 12:37:26] "GET /users/login/ HTTP/1.1" 200 8160
+[13/Nov/2025 12:37:32] "POST /users/login/ HTTP/1.1" 302 0
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 12:37:32.884858) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 12:37:32.886370) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 12:37:32.886370) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 12:37:32] "GET /inventory/ HTTP/1.1" 200 28555
+[13/Nov/2025 12:37:50] "GET /users/logout/ HTTP/1.1" 302 0
+[13/Nov/2025 12:37:50] "GET /users/login/ HTTP/1.1" 200 8160
+[13/Nov/2025 12:37:58] "POST /users/login/ HTTP/1.1" 302 0
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 12:37:58.064921) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 12:37:58.068321) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 12:37:58.068321) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 12:37:58] "GET /inventory/ HTTP/1.1" 200 17871
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:34:47
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:39:27
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 12:39:44.402611) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 12:39:44.414743) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 12:39:44.414743) while time zone support is active.
+  warnings.warn(
+Internal Server Error: /inventory/
+Traceback (most recent call last):
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py", line 321, in dashboard
+    return render(request, template, context)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 326, in render
+    if match:
+       ^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __bool__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1949, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1610, in execute_sql
+    sql, params = self.as_sql()
+                  ~~~~~~~~~~~^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 766, in as_sql
+    extra_select, order_by, group_by = self.pre_sql_setup(
+                                       ~~~~~~~~~~~~~~~~~~^
+        with_col_aliases=with_col_aliases or bool(combinator),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 85, in pre_sql_setup
+    self.setup_query(with_col_aliases=with_col_aliases)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 74, in setup_query
+    self.select, self.klass_info, self.annotation_col_map = self.get_select(
+                                                            ~~~~~~~~~~~~~~~^
+        with_col_aliases=with_col_aliases,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 299, in get_select
+    related_klass_infos = self.get_related_selections(select, select_mask)
+  File "/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1396, in get_related_selections
+    raise FieldError(
+    ...<6 lines>...
+    )
+django.core.exceptions.FieldError: Invalid field name(s) given in select_related: 'fournisseur'. Choices are: client, utilisateur
+[13/Nov/2025 12:39:44] "GET /inventory/ HTTP/1.1" 500 197571
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:39:43
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:40:27
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 12:40:49.664226) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 12:40:49.675622) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 12:40:49.675622) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 12:40:49] "GET /inventory/ HTTP/1.1" 200 21025
+[13/Nov/2025 12:41:58] "GET /users/logout/ HTTP/1.1" 302 0
+[13/Nov/2025 12:41:58] "GET /users/login/ HTTP/1.1" 200 8180
+[13/Nov/2025 12:43:42] "GET /users/login/ HTTP/1.1" 200 6857
+[13/Nov/2025 12:43:51] "GET /users/logout/ HTTP/1.1" 302 0
+[13/Nov/2025 12:43:51] "GET /users/login/ HTTP/1.1" 200 7937
+[13/Nov/2025 12:43:53] "GET /users/login/ HTTP/1.1" 200 6857
+[13/Nov/2025 12:43:54] "GET /users/login/ HTTP/1.1" 200 6857
+[13/Nov/2025 12:45:26] "GET /users/login/ HTTP/1.1" 200 7015
+[13/Nov/2025 12:45:35] "GET /users/login/ HTTP/1.1" 200 6883
+[13/Nov/2025 13:00:20] "POST /users/login/ HTTP/1.1" 302 0
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-01 13:00:20.979008) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-10-14 13:00:20.983529) while time zone support is active.
+  warnings.warn(
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Vente.date_vente received a naive datetime (2025-11-13 13:00:20.983529) while time zone support is active.
+  warnings.warn(
+[13/Nov/2025 13:00:21] "GET /inventory/ HTTP/1.1" 200 21025
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/extended_views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 13, 2025 - 12:40:49
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/extended_views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:04:58
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+[14/Nov/2025 19:05:19] "GET /inventory/devis/ HTTP/1.1" 200 24170
+[14/Nov/2025 19:05:25] "GET /inventory/devis/nouveau/ HTTP/1.1" 200 30675
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/extended_views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:05:06
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/extended_views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:06:56
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+[14/Nov/2025 19:07:37] "GET /inventory/devis/nouveau/ HTTP/1.1" 200 31530
+[14/Nov/2025 19:07:52] "POST /inventory/devis/nouveau/ HTTP/1.1" 302 0
+[14/Nov/2025 19:07:52] "GET /inventory/devis/7/ HTTP/1.1" 200 20334
+[14/Nov/2025 19:08:08] "GET /inventory/devis/7/pdf/ HTTP/1.1" 200 2400
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 19:08:46.905912) while time zone support is active.
+  warnings.warn(
+[14/Nov/2025 19:08:46] "GET /inventory/commandes/ HTTP/1.1" 200 68872
+[14/Nov/2025 19:08:57] "GET /inventory/commandes/24/ HTTP/1.1" 200 18649
+[14/Nov/2025 19:09:00] "GET /inventory/commandes/24/modifier/ HTTP/1.1" 200 20207
+[14/Nov/2025 19:09:03] "GET /inventory/commandes/avancee/ HTTP/1.1" 200 32125
+[14/Nov/2025 19:09:13] "POST /inventory/commandes/avancee/ HTTP/1.1" 302 0
+[14/Nov/2025 19:09:14] "GET /inventory/commandes/25/ HTTP/1.1" 200 20582
+[14/Nov/2025 19:09:22] "GET /inventory/commandes/25/bon-commande/ HTTP/1.1" 200 3796
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 19:09:36.120682) while time zone support is active.
+  warnings.warn(
+[14/Nov/2025 19:09:36] "GET /inventory/commandes/ HTTP/1.1" 200 70403
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 19:09:42.547122) while time zone support is active.
+  warnings.warn(
+[14/Nov/2025 19:09:42] "GET /inventory/commandes/?page=2&q=&statut= HTTP/1.1" 200 20059
+[14/Nov/2025 19:09:47] "GET /inventory/commandes/nouvelle/ HTTP/1.1" 200 31304
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:07:37
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+=== DEBUG DEVIS_CREATE ===
+POST data: <QueryDict: {'csrfmiddlewaretoken': ['2vYFV0DLNYWMalNaq3LekKsD2i8H68PBZLP5sWzy70grdZDrmpzrnZ5IEwiyxZr3'], 'client': ['8'], 'date_validite': ['2025-11-04'], 'remise_globale': ['0'], 'notes': [''], 'conditions_particulieres': [''], 'ligne_0_produit': ['15'], 'ligne_0_quantite': ['1'], 'ligne_0_prix_unitaire': ['4000000.00'], 'ligne_0_remise': ['0'], 'ligne_1_produit': ['13'], 'ligne_1_quantite': ['1'], 'ligne_1_prix_unitaire': ['3000000.00'], 'ligne_1_remise': ['0'], 'action': ['save']}>
+Lignes trouvées: ['0', '1']
+Traitement ligne 0: produit=15, qte=1, prix=4000000.00, remise=0
+✓ Ligne 0 créée: Analyseur d’hématologie Z50 x 1
+Traitement ligne 1: produit=13, qte=1, prix=3000000.00, remise=0
+✓ Ligne 1 créée: Analyseur d’hématologie Z3 x 1
+✓ Total de lignes créées: 2
+=== DEBUG COMMANDE_CREATE ===
+Lignes trouvées: ['0']
+Traitement ligne 0: produit=15, quantite=1, prix=4000000.00
+✓ Ligne 0 créée: Analyseur d’hématologie Z50 x 1
+✓ Total de lignes créées: 1
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:11:18
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:12:00
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:12:03
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:12:18
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:12:21
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:12:25
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:12:29
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 19:12:41.266452) while time zone support is active.
+  warnings.warn(
+[14/Nov/2025 19:12:41] "GET /inventory/commandes/ HTTP/1.1" 200 70403
+[14/Nov/2025 19:12:43] "GET /inventory/commandes/25/modifier/ HTTP/1.1" 200 29642
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:12:34
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:16:15
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/inventory/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 14, 2025 - 19:17:14
+Django version 5.2.4, using settings 'enterprise_inventory.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+[14/Nov/2025 19:18:22] "GET /inventory/commandes/25/modifier/ HTTP/1.1" 200 33145
+[14/Nov/2025 19:22:11] "GET /inventory/commandes/25/modifier/ HTTP/1.1" 200 35918
+[14/Nov/2025 19:22:13] "GET /inventory/commandes/25/modifier/ HTTP/1.1" 200 35918
+/Users/flozed/Desktop/ZPRO/mystock/stock/ggstock/.venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py:1671: RuntimeWarning: DateTimeField Commande.date_commande received a naive datetime (2025-11-01 19:22:19.228812) while time zone support is active.
+  warnings.warn(
+[14/Nov/2025 19:22:19] "GET /inventory/commandes/ HTTP/1.1" 200 70403
+[14/Nov/2025 19:22:21] "GET /inventory/commandes/nouvelle/ HTTP/1.1" 200 34873
+[14/Nov/2025 19:22:43] "POST /inventory/commandes/nouvelle/ HTTP/1.1" 302 0
+[14/Nov/2025 19:22:43] "GET /inventory/commandes/26/ HTTP/1.1" 200 18961

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impression Vente</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-900">
+    <div class="container mx-auto p-4">
+        <header class="mb-4">
+            <h1 class="text-2xl font-bold">Détails de la Vente</h1>
+            <p class="text-sm text-gray-600">Date : {{ vente.date }}</p>
+        </header>
+
+        <section class="mb-4">
+            <h2 class="text-xl font-semibold">Informations Client</h2>
+            <p><strong>Nom :</strong> {{ vente.client.nom }}</p>
+            <p><strong>Email :</strong> {{ vente.client.email }}</p>
+            <p><strong>Téléphone :</strong> {{ vente.client.telephone }}</p>
+        </section>
+
+        <section class="mb-4">
+            <h2 class="text-xl font-semibold">Produits</h2>
+            <table class="table-auto w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 px-4 py-2">Produit</th>
+                        <th class="border border-gray-300 px-4 py-2">Quantité</th>
+                        <th class="border border-gray-300 px-4 py-2">Prix Unitaire</th>
+                        <th class="border border-gray-300 px-4 py-2">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ligne in vente.lignes_vente %}
+                    <tr>
+                        <td class="border border-gray-300 px-4 py-2">{{ ligne.produit.nom }}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{ ligne.quantite }}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{ ligne.prix_unitaire }}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{ ligne.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <footer class="mt-4">
+            <p class="text-lg font-bold">Total Vente : {{ vente.total }}</p>
+        </footer>
+    </div>
+</body>
+</html>

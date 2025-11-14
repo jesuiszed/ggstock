@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Commercial 2 - {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block page_title %}
+    <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+            <i class="fas fa-file-invoice text-white"></i>
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Dashboard Commercial 2</h1>
+            <p class="text-gray-600">Gestion des clients, devis et prospects</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    
+    <!-- Statistiques devis, prospects et clients -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-100">Devis en cours de validation</p>
+                    <p class="text-3xl font-bold">{{ mes_devis.total|default:0 }}</p>
+                </div>
+                <i class="fas fa-file-invoice text-blue-200 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100">Prospects actifs</p>
+                    <p class="text-3xl font-bold">{{ mes_prospects.total|default:0 }}</p>
+                </div>
+                <i class="fas fa-user-plus text-green-200 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-100">Clients actifs</p>
+                    <p class="text-3xl font-bold">{{ total_clients }}</p>
+                </div>
+                <i class="fas fa-users text-purple-200 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100">Devis validés</p>
+                    <p class="text-3xl font-bold">{{ stats.devis_acceptes|default:0 }}</p>
+                </div>
+                <i class="fas fa-check-circle text-orange-200 text-2xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides Commercial Terrain -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+            <i class="fas fa-bolt text-green-500 mr-2"></i>Actions Rapides
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="{% url 'inventory:devis_create' %}" class="bg-blue-50 hover:bg-blue-100 p-4 rounded-lg border border-blue-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-file-alt text-blue-600"></i>
+                    <span class="font-medium text-blue-800">Nouveau Devis</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'inventory:prospect_create' %}" class="bg-orange-50 hover:bg-orange-100 p-4 rounded-lg border border-orange-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-user-plus text-orange-600"></i>
+                    <span class="font-medium text-orange-800">Nouveau Prospect</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'inventory:client_create' %}" class="bg-green-50 hover:bg-green-100 p-4 rounded-lg border border-green-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-user-plus text-green-600"></i>
+                    <span class="font-medium text-green-800">Nouveau Client</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'inventory:note_create' %}" class="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-sticky-note text-purple-600"></i>
+                    <span class="font-medium text-purple-800">Nouvelle Note</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Gestion spécialisée Terrain -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Devis en cours -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">
+                    <i class="fas fa-file-alt text-blue-500 mr-2"></i>Mes Devis
+                </h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-3">
+                    <a href="{% url 'inventory:devis_list' %}" class="block hover:bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Tous les devis</span>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                    <a href="{% url 'inventory:devis_list' %}?statut=BROUILLON" class="block hover:bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Brouillons</span>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">{{ stats.devis_brouillon|default:0 }}</span>
+                        </div>
+                    </a>
+                    <a href="{% url 'inventory:devis_list' %}?statut=ENVOYE" class="block hover:bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Envoyés</span>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">{{ stats.devis_envoyes|default:0 }}</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prospects -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">
+                    <i class="fas fa-users text-orange-500 mr-2"></i>Mes Prospects
+                </h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-3">
+                    <a href="{% url 'inventory:prospect_list' %}" class="block hover:bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Tous les prospects</span>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                    <a href="{% url 'inventory:prospect_list' %}?statut=NOUVEAU" class="block hover:bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Nouveaux</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">{{ stats.prospects_nouveaux|default:0 }}</span>
+                        </div>
+                    </a>
+                    <a href="{% url 'inventory:prospect_list' %}?statut=QUALIFIE" class="block hover:bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Qualifiés</span>
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">{{ stats.prospects_qualifies|default:0 }}</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commandes et clients -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">
+                    <i class="fas fa-shopping-cart text-green-500 mr-2"></i>Commandes & Clients
+                </h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-3">
+                    <a href="{% url 'inventory:commandes_list' %}" class="block hover:bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Mes commandes</span>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                    <a href="{% url 'inventory:clients_list' %}" class="block hover:bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Mes clients</span>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">{{ stats.total_clients|default:0 }}</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Commandes à traiter et activité récente -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Commandes à traiter -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Commandes à Traiter</h3>
+            </div>
+            <div class="p-6">
+                {% if commandes_a_traiter %}
+                    <div class="space-y-3">
+                        {% for commande in commandes_a_traiter %}
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                            <div>
+                                <p class="font-medium">{{ commande.fournisseur.nom }}</p>
+                                <p class="text-sm text-gray-500">{{ commande.date_commande|date:"d/m/Y" }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-2 py-1 text-xs rounded
+                                       {% if commande.statut == 'EN_ATTENTE' %}bg-yellow-100 text-yellow-800
+                                       {% elif commande.statut == 'CONFIRMEE' %}bg-blue-100 text-blue-800
+                                       {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ commande.get_statut_display }}
+                                </span>
+                                <p class="text-xs text-gray-500 mt-1">{{ commande.lignes.count }} produit{{ commande.lignes.count|pluralize }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">Aucune commande à traiter</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Clients récents -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Clients Récents</h3>
+            </div>
+            <div class="p-6">
+                {% if clients_recents %}
+                    <div class="space-y-3">
+                        {% for client in clients_recents %}
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                            <div>
+                                <p class="font-medium">{{ client.nom }}</p>
+                                <p class="text-sm text-gray-500">{{ client.email|default:client.telephone }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-500">Créé le {{ client.date_creation|date:"d/m/Y" }}</p>
+                                {% if client.actif %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Inactif
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">Aucun client récent</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Suivi des objectifs -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Suivi des Objectifs</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h4 class="font-medium text-blue-800">Nouveaux Clients</h4>
+                <p class="text-2xl font-bold text-blue-600">{{ nouveaux_clients_mois }}</p>
+                <p class="text-sm text-blue-600">ce mois</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h4 class="font-medium text-green-800">Commandes Traitées</h4>
+                <p class="text-2xl font-bold text-green-600">{{ commandes_traitees_mois }}</p>
+                <p class="text-sm text-green-600">ce mois</p>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h4 class="font-medium text-purple-800">Taux de Satisfaction</h4>
+                <p class="text-2xl font-bold text-purple-600">95%</p>
+                <p class="text-sm text-purple-600">estimé</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conseils pour Commercial Terrain -->
+    <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-lightbulb text-green-400"></i>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-green-800">Conseils du jour</h3>
+                <div class="mt-2 text-sm text-green-700">
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Suivez régulièrement le statut de vos commandes</li>
+                        <li>Maintenez un contact régulier avec vos clients</li>
+                        <li>Documentez les besoins spécifiques de chaque client</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

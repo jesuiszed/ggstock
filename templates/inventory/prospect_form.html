@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if object %}Modifier le prospect{% else %}Nouveau prospect{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            {% if object %}Modifier le prospect{% else %}Nouveau prospect{% endif %}
+        </h1>
+        <a href="{% url 'inventory:prospect_list' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            <i class="fas fa-arrow-left mr-2"></i>Retour à la liste
+        </a>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="bg-white shadow-md rounded-lg">
+        <form method="post" class="p-6">
+            {% csrf_token %}
+            
+            <!-- Messages d'erreur -->
+            {% if form.non_field_errors %}
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Informations de base -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
+                        Informations générales
+                    </h3>
+                    
+                    <!-- Nom de l'entreprise -->
+                    <div>
+                        <label for="{{ form.nom_entreprise.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.nom_entreprise.label }} *
+                        </label>
+                        {{ form.nom_entreprise }}
+                        {% if form.nom_entreprise.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.nom_entreprise.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Secteur d'activité -->
+                    <div>
+                        <label for="{{ form.secteur_activite.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.secteur_activite.label }}
+                        </label>
+                        {{ form.secteur_activite }}
+                        {% if form.secteur_activite.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.secteur_activite.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Taille entreprise -->
+                    <div>
+                        <label for="{{ form.taille_entreprise.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.taille_entreprise.label }}
+                        </label>
+                        {{ form.taille_entreprise }}
+                        {% if form.taille_entreprise.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.taille_entreprise.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Statut -->
+                    <div>
+                        <label for="{{ form.statut.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.statut.label }}
+                        </label>
+                        {{ form.statut }}
+                        {% if form.statut.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.statut.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Source -->
+                    <div>
+                        <label for="{{ form.source.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.source.label }}
+                        </label>
+                        {{ form.source }}
+                        {% if form.source.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.source.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Contact principal -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
+                        Contact principal
+                    </h3>
+                    
+                    <!-- Nom du contact -->
+                    <div>
+                        <label for="{{ form.nom_contact.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.nom_contact.label }} *
+                        </label>
+                        {{ form.nom_contact }}
+                        {% if form.nom_contact.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.nom_contact.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Fonction -->
+                    <div>
+                        <label for="{{ form.fonction_contact.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.fonction_contact.label }}
+                        </label>
+                        {{ form.fonction_contact }}
+                        {% if form.fonction_contact.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.fonction_contact.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Téléphone -->
+                    <div>
+                        <label for="{{ form.telephone.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.telephone.label }}
+                        </label>
+                        {{ form.telephone }}
+                        {% if form.telephone.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.telephone.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.email.label }}
+                        </label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Adresse -->
+                    <div>
+                        <label for="{{ form.adresse.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.adresse.label }}
+                        </label>
+                        {{ form.adresse }}
+                        {% if form.adresse.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.adresse.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section pleine largeur -->
+            <div class="mt-6 space-y-4">
+                <h3 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
+                    Détails commerciaux
+                </h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- Budget estimé -->
+                    <div>
+                        <label for="{{ form.budget_estime.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.budget_estime.label }}
+                        </label>
+                        {{ form.budget_estime }}
+                        {% if form.budget_estime.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.budget_estime.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Échéance prévue -->
+                    <div>
+                        <label for="{{ form.echeance_prevue.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.echeance_prevue.label }}
+                        </label>
+                        {{ form.echeance_prevue }}
+                        {% if form.echeance_prevue.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.echeance_prevue.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Commercial assigné -->
+                    <div>
+                        <label for="{{ form.commercial_assigne.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.commercial_assigne.label }}
+                        </label>
+                        {{ form.commercial_assigne }}
+                        {% if form.commercial_assigne.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.commercial_assigne.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Besoins identifiés -->
+                <div>
+                    <label for="{{ form.besoins_identifies.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.besoins_identifies.label }}
+                    </label>
+                    {{ form.besoins_identifies }}
+                    {% if form.besoins_identifies.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.besoins_identifies.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Notes -->
+                <div>
+                    <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.notes.label }}
+                    </label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.notes.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="mt-8 flex justify-end space-x-4 pt-4 border-t border-gray-200">
+                <a href="{% url 'inventory:prospect_list' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                    Annuler
+                </a>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    {% if object %}Mettre à jour{% else %}Créer le prospect{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Auto-complétion et validation côté client
+document.addEventListener('DOMContentLoaded', function() {
+    // Validation du format email
+    const emailField = document.getElementById('{{ form.email.id_for_label }}');
+    if (emailField) {
+        emailField.addEventListener('blur', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+                this.classList.add('border-red-500');
+            } else {
+                this.classList.remove('border-red-500');
+            }
+        });
+    }
+
+    // Validation du format téléphone
+    const phoneField = document.getElementById('{{ form.telephone.id_for_label }}');
+    if (phoneField) {
+        phoneField.addEventListener('input', function() {
+            // Permettre seulement les chiffres, espaces, tirets et parenthèses
+            this.value = this.value.replace(/[^0-9\s\-\(\)\+]/g, '');
+        });
+    }
+
+    // Format du budget
+    const budgetField = document.getElementById('{{ form.budget_estime.id_for_label }}');
+    if (budgetField) {
+        budgetField.addEventListener('input', function() {
+            // Supprimer les caractères non numériques sauf le point
+            this.value = this.value.replace(/[^0-9\.]/g, '');
+        });
+    }
+});
+</script>
+{% endblock %}

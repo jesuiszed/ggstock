@@ -1,0 +1,444 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- En-tête -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-file-invoice text-blue-600 mr-3"></i>
+                {{ title }}
+            </h1>
+            <div class="flex space-x-3">
+                <a href="{% url 'inventory:devis_list' %}" 
+                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                    <i class="fas fa-arrow-left mr-2"></i>Retour à la liste
+                </a>
+            </div>
+        </div>
+
+        <form method="post" id="devisForm" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Informations du devis -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                    Informations générales
+                </h2>
+                
+                {% if form.errors %}
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle text-red-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700 font-medium">Erreurs détectées :</p>
+                                <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+                                    {% for field, errors in form.errors.items %}
+                                        {% for error in errors %}
+                                            <li>{{ field }} : {{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <label for="{{ form.client.id_for_label }}" 
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user mr-1"></i>{{ form.client.label }} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.client }}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.date_validite.id_for_label }}" 
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar mr-1"></i>{{ form.date_validite.label }} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.date_validite }}
+                        <p class="text-xs text-gray-500 mt-1">Date limite de validité du devis</p>
+                    </div>
+                    
+                    <div class="md:col-span-2 lg:col-span-1">
+                        <label for="id_remise_globale" 
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-percent mr-1"></i>Remise globale (%)
+                        </label>
+                        <input type="number" name="remise_globale" id="id_remise_globale" step="0.01" min="0" max="100" value="0" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Remise sur le total</p>
+                    </div>
+                    
+                    <div class="md:col-span-2 lg:col-span-3">
+                        <label for="{{ form.notes.id_for_label }}" 
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-sticky-note mr-1"></i>{{ form.notes.label }}
+                        </label>
+                        {{ form.notes }}
+                    </div>
+                    
+                    <div class="md:col-span-2 lg:col-span-3">
+                        <label for="{{ form.conditions_particulieres.id_for_label }}" 
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-file-contract mr-1"></i>{{ form.conditions_particulieres.label }}
+                        </label>
+                        {{ form.conditions_particulieres }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produits du devis -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900">
+                        <i class="fas fa-box text-blue-500 mr-2"></i>
+                        Produits du devis
+                    </h2>
+                    <button type="button" id="addProduct" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200">
+                        <i class="fas fa-plus mr-2"></i>Ajouter un produit
+                    </button>
+                </div>
+
+                <div id="productsContainer" class="space-y-4">
+                    <!-- Les lignes de produits seront ajoutées ici dynamiquement -->
+                </div>
+
+                <!-- Résumé financier -->
+                <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                        <div class="flex justify-between">
+                            <span class="font-medium">Sous-total HT :</span>
+                            <span id="subtotal" class="font-bold">0,00 F CFA</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">Remise :</span>
+                            <span id="discountAmount" class="font-bold text-red-600">0,00 F CFA</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">TVA (18%) :</span>
+                            <span id="tvaAmount" class="font-bold">0,00 F CFA</span>
+                        </div>
+                        <div class="flex justify-between text-lg">
+                            <span class="font-bold">Total TTC :</span>
+                            <span id="total" class="font-bold text-blue-600">0,00 F CFA</span>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-600 mt-2">
+                        <i class="fas fa-box mr-1"></i>
+                        <span id="totalLines">0</span> ligne(s) - <span id="totalItems">0</span> produit(s)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <div class="text-sm text-gray-600">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Vérifiez tous les détails avant de créer le devis
+                    </div>
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                        <a href="{% url 'inventory:devis_list' %}" 
+                           class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg transition duration-200 text-center">
+                            <i class="fas fa-times mr-2"></i>Annuler
+                        </a>
+                        <button type="submit" name="action" value="save"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-200">
+                            <i class="fas fa-save mr-2"></i>Enregistrer le devis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Template pour une ligne de produit -->
+<template id="productTemplate">
+    <div class="product-line bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <div class="flex items-center justify-between mb-3">
+            <h4 class="text-sm font-medium text-gray-700">
+                <i class="fas fa-box mr-1"></i>Ligne produit #<span class="line-number"></span>
+            </h4>
+            <button type="button" class="remove-product text-red-600 hover:text-red-800 p-1 rounded">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div class="md:col-span-5">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Produit <span class="text-red-500">*</span></label>
+                <select name="produit" class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                    <option value="">Sélectionnez un produit...</option>
+                    {% for produit in produits %}
+                    <option value="{{ produit.id }}" 
+                            data-price="{{ produit.prix_vente }}" 
+                            data-stock="{{ produit.quantite_stock }}"
+                            data-name="{{ produit.nom }}">
+                        {{ produit.nom }} ({{ produit.reference }}) - Stock: {{ produit.quantite_stock }} - {{ produit.prix_vente }} F CFA
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="md:col-span-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Quantité <span class="text-red-500">*</span></label>
+                <input type="number" name="quantite" min="1" value="1" 
+                       class="quantity-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                <div class="text-xs text-gray-500 mt-1">Stock: <span class="stock-info">-</span></div>
+            </div>
+            
+            <div class="md:col-span-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Prix unit. (F CFA) <span class="text-red-500">*</span></label>
+                <input type="number" name="prix_unitaire" step="0.01" min="0.01" 
+                       class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+            </div>
+            
+            <div class="md:col-span-1">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Remise (%)</label>
+                <input type="number" name="remise" step="0.01" min="0" max="100" value="0" 
+                       class="remise-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+            </div>
+            
+            <div class="md:col-span-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Sous-total</label>
+                <div class="text-lg font-bold text-blue-600 mt-2">
+                    <span class="line-subtotal">0,00 F CFA</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let lineCount = 0;
+    
+    console.log('=== DEVIS FORM INIT ===');
+    
+    // Charger les lignes existantes si on est en mode édition
+    {% if lignes_existantes %}
+        console.log('Mode édition: chargement des lignes existantes');
+        {% for ligne in lignes_existantes %}
+            addProductLine({
+                produit: {{ ligne.produit.id }},
+                quantite: {{ ligne.quantite }},
+                prix_unitaire: {{ ligne.prix_unitaire }},
+                remise: {{ ligne.remise|default:0 }}
+            });
+        {% endfor %}
+    {% else %}
+        // Ajouter une ligne vide pour la création
+        addProductLine();
+    {% endif %}
+    
+    // Ajouter une ligne de produit
+    document.getElementById('addProduct').addEventListener('click', function() {
+        console.log('Bouton Ajouter cliqué');
+        addProductLine();
+    });
+    
+    function addProductLine(data = null) {
+        console.log('Ajout ligne', lineCount, data);
+        const template = document.getElementById('productTemplate');
+        const clone = template.content.cloneNode(true);
+        
+        // Mettre à jour les noms des champs avec le bon format
+        const inputs = clone.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            const originalName = input.getAttribute('name');
+            input.name = `ligne_${lineCount}_${originalName}`;
+            console.log('Champ créé:', input.name);
+        });
+        
+        // Mettre à jour le numéro de ligne
+        clone.querySelector('.line-number').textContent = lineCount + 1;
+        
+        document.getElementById('productsContainer').appendChild(clone);
+        
+        // Ajouter les event listeners
+        const newLine = document.getElementById('productsContainer').lastElementChild;
+        setupLineEvents(newLine, lineCount);
+        
+        // Pré-remplir si des données sont fournies
+        if (data) {
+            const productSelect = newLine.querySelector('.product-select');
+            const quantityInput = newLine.querySelector('.quantity-input');
+            const priceInput = newLine.querySelector('.price-input');
+            const remiseInput = newLine.querySelector('.remise-input');
+            
+            productSelect.value = data.produit;
+            quantityInput.value = data.quantite;
+            priceInput.value = data.prix_unitaire;
+            remiseInput.value = data.remise;
+            
+            // Déclencher l'événement change pour mettre à jour le stock et le sous-total
+            productSelect.dispatchEvent(new Event('change'));
+        }
+        
+        lineCount++;
+        updateTotal();
+    }
+    
+    // Configuration des événements pour une ligne
+    function setupLineEvents(line, index) {
+        const productSelect = line.querySelector('.product-select');
+        const quantityInput = line.querySelector('.quantity-input');
+        const priceInput = line.querySelector('.price-input');
+        const remiseInput = line.querySelector('.remise-input');
+        const stockInfo = line.querySelector('.stock-info');
+        const subtotalSpan = line.querySelector('.line-subtotal');
+        const removeBtn = line.querySelector('.remove-product');
+        
+        // Sélection de produit
+        productSelect.addEventListener('change', function() {
+            const option = this.options[this.selectedIndex];
+            if (option.value) {
+                const price = parseFloat(option.dataset.price);
+                const stock = parseInt(option.dataset.stock);
+                
+                priceInput.value = price.toFixed(2);
+                stockInfo.textContent = stock;
+                
+                // Calculer le sous-total
+                updateLineSubtotal();
+                updateTotal();
+            } else {
+                priceInput.value = '';
+                stockInfo.textContent = '-';
+                subtotalSpan.textContent = '0,00 F CFA';
+                updateTotal();
+            }
+        });
+        
+        // Modification de la quantité
+        quantityInput.addEventListener('input', function() {
+            updateLineSubtotal();
+            updateTotal();
+        });
+        
+        // Modification du prix
+        priceInput.addEventListener('input', function() {
+            updateLineSubtotal();
+            updateTotal();
+        });
+        
+        // Modification de la remise ligne
+        remiseInput.addEventListener('input', function() {
+            updateLineSubtotal();
+            updateTotal();
+        });
+        
+        // Supprimer la ligne
+        removeBtn.addEventListener('click', function() {
+            if (document.querySelectorAll('.product-line').length > 1) {
+                line.remove();
+                updateLineNumbers();
+                updateTotal();
+            } else {
+                alert('Vous devez avoir au moins une ligne de produit!');
+            }
+        });
+        
+        function updateLineSubtotal() {
+            const quantity = parseFloat(quantityInput.value) || 0;
+            const price = parseFloat(priceInput.value) || 0;
+            const remise = parseFloat(remiseInput.value) || 0;
+            
+            const total = quantity * price;
+            const montantRemise = total * (remise / 100);
+            const subtotal = total - montantRemise;
+            
+            subtotalSpan.textContent = subtotal.toFixed(2) + ' F CFA';
+        }
+    }
+    
+    // Mettre à jour les numéros de ligne
+    function updateLineNumbers() {
+        const lines = document.querySelectorAll('.product-line');
+        lines.forEach((line, index) => {
+            line.querySelector('.line-number').textContent = index + 1;
+        });
+    }
+    
+    // Mise à jour des totaux
+    function updateTotal() {
+        let subtotalHT = 0;
+        let totalRemiseLignes = 0;
+        let totalQuantity = 0;
+        const lines = document.querySelectorAll('.product-line');
+        
+        lines.forEach(line => {
+            const quantity = parseFloat(line.querySelector('.quantity-input').value) || 0;
+            const price = parseFloat(line.querySelector('.price-input').value) || 0;
+            const remiseLigne = parseFloat(line.querySelector('.remise-input').value) || 0;
+            
+            const total = quantity * price;
+            const montantRemiseLigne = total * (remiseLigne / 100);
+            
+            subtotalHT += total;
+            totalRemiseLignes += montantRemiseLigne;
+            totalQuantity += quantity;
+        });
+        
+        // Remise globale
+        const remiseGlobale = parseFloat(document.getElementById('id_remise_globale').value) || 0;
+        const totalApresRemiseLignes = subtotalHT - totalRemiseLignes;
+        const montantRemiseGlobale = totalApresRemiseLignes * (remiseGlobale / 100);
+        const totalRemise = totalRemiseLignes + montantRemiseGlobale;
+        
+        // Calcul TVA et TTC
+        const totalHT = subtotalHT - totalRemise;
+        const tva = totalHT * 0.18; // TVA 18%
+        const totalTTC = totalHT + tva;
+        
+        // Mise à jour de l'affichage
+        document.getElementById('subtotal').textContent = subtotalHT.toFixed(2) + ' F CFA';
+        document.getElementById('discountAmount').textContent = totalRemise.toFixed(2) + ' F CFA';
+        document.getElementById('tvaAmount').textContent = tva.toFixed(2) + ' F CFA';
+        document.getElementById('total').textContent = totalTTC.toFixed(2) + ' F CFA';
+        document.getElementById('totalLines').textContent = lines.length;
+        document.getElementById('totalItems').textContent = totalQuantity;
+    }
+    
+    // Écouter les modifications de la remise globale
+    const remiseGlobaleInput = document.getElementById('id_remise_globale');
+    if (remiseGlobaleInput) {
+        remiseGlobaleInput.addEventListener('input', updateTotal);
+    }
+    
+    // Validation avant soumission
+    document.getElementById('devisForm').addEventListener('submit', function(e) {
+        const lines = document.querySelectorAll('.product-line');
+        let hasValidProduct = false;
+        
+        lines.forEach(line => {
+            const produit = line.querySelector('.product-select').value;
+            const quantite = line.querySelector('.quantity-input').value;
+            const prix = line.querySelector('.price-input').value;
+            
+            if (produit && quantite && prix) {
+                hasValidProduct = true;
+            }
+        });
+        
+        if (!hasValidProduct) {
+            e.preventDefault();
+            alert('Veuillez ajouter au moins un produit valide au devis.');
+            return false;
+        }
+        
+        console.log('Formulaire soumis avec', lines.length, 'lignes');
+    });
+});
+</script>
+{% endblock %}

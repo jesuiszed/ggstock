@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Détail du Devis {{ devis.numero_devis }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- En-tête -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Devis {{ devis.numero_devis }}</h1>
+                <nav class="mt-2">
+                    <a href="{% url 'inventory:devis_list' %}" class="text-indigo-600 hover:text-indigo-900">
+                        <i class="fas fa-arrow-left mr-2"></i>Retour à la liste des devis
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="flex space-x-3">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                    {% if devis.statut == 'BROUILLON' %}bg-gray-100 text-gray-800
+                    {% elif devis.statut == 'ENVOYE' %}bg-blue-100 text-blue-800
+                    {% elif devis.statut == 'ACCEPTE' %}bg-green-100 text-green-800
+                    {% elif devis.statut == 'REFUSE' %}bg-red-100 text-red-800
+                    {% elif devis.statut == 'EXPIRE' %}bg-yellow-100 text-yellow-800
+                    {% endif %}">
+                    {{ devis.get_statut_display }}
+                </span>
+                
+                <a href="{% url 'inventory:devis_edit' devis.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-edit mr-2"></i>Modifier
+                </a>
+                
+                <a href="{% url 'inventory:devis_pdf' devis.pk %}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Informations principales -->
+            <div class="lg:col-span-2">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Informations du devis</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Date de création</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ devis.date_creation|date:"d/m/Y H:i" }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Valide jusqu'au</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ devis.date_validite|date:"d/m/Y" }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Commercial</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ devis.commercial.get_full_name }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Montant total</label>
+                                <p class="mt-1 text-lg font-bold text-green-600">{{ devis.total|floatformat:2 }}F CFA</p>
+                            </div>
+                        </div>
+
+                        <!-- Produits -->
+                        <h4 class="text-md font-medium text-gray-900 mb-3">Produits</h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produit</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantité</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix unitaire</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remise</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sous-total</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for ligne in lignes_devis %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            {{ ligne.produit.nom }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ ligne.quantite }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ ligne.prix_unitaire|floatformat:2 }}F CFA
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ ligne.remise|floatformat:2 }}%
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            {{ ligne.sous_total|floatformat:2 }}F CFA
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot class="bg-gray-50">
+                                    <tr>
+                                        <td colspan="4" class="px-6 py-4 text-right text-sm font-medium text-gray-900">
+                                            Total HT :
+                                        </td>
+                                        <td class="px-6 py-4 text-sm font-bold text-green-600">
+                                            {{ devis.total|floatformat:2 }}F CFA
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Notes -->
+                        {% if devis.notes %}
+                        <div class="mt-6">
+                            <label class="block text-sm font-medium text-gray-500">Notes</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ devis.notes|linebreaks }}</p>
+                        </div>
+                        {% endif %}
+
+                        <!-- Conditions particulières -->
+                        {% if devis.conditions_particulieres %}
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-500">Conditions particulières</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ devis.conditions_particulieres|linebreaks }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations client -->
+            <div>
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Informations client</h3>
+                        
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Nom</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ devis.client.nom_complet }}</p>
+                            </div>
+                            
+                            {% if devis.client.entreprise %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Entreprise</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ devis.client.entreprise }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Email</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ devis.client.email }}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Téléphone</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ devis.client.telephone }}</p>
+                            </div>
+                            
+                            {% if devis.client.adresse %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Adresse</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ devis.client.adresse|linebreaks }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mt-6">
+                            <a href="{% url 'inventory:client_detail' devis.client.pk %}" class="w-full bg-indigo-600 border border-transparent rounded-md py-2 px-4 flex justify-center items-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <i class="fas fa-user mr-2"></i>Voir le client
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

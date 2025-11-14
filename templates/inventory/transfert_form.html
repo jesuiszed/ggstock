@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if object %}Modifier le transfert{% else %}Nouveau transfert{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            {% if object %}Modifier le transfert{% else %}Nouveau transfert de stock{% endif %}
+        </h1>
+        <a href="{% url 'inventory:transfert_list' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            <i class="fas fa-arrow-left mr-2"></i>Retour à la liste
+        </a>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="bg-white shadow-md rounded-lg">
+        <form method="post" class="p-6">
+            {% csrf_token %}
+            
+            <!-- Messages d'erreur -->
+            {% if form.non_field_errors %}
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Informations du transfert -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
+                        Informations du transfert
+                    </h3>
+                    
+                    <!-- Numéro de transfert -->
+                    {% if object %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Numéro de transfert
+                        </label>
+                        <input type="text" value="{{ object.numero_transfert }}" disabled class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600">
+                    </div>
+                    {% endif %}
+
+                    <!-- Produit -->
+                    <div>
+                        <label for="{{ form.produit.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.produit.label }} *
+                        </label>
+                        {{ form.produit }}
+                        {% if form.produit.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.produit.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Quantité -->
+                    <div>
+                        <label for="{{ form.quantite.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.quantite.label }} *
+                        </label>
+                        {{ form.quantite }}
+                        {% if form.quantite.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.quantite.errors.0 }}</p>
+                        {% endif %}
+                        <p class="text-sm text-gray-500 mt-1">Stock disponible: <span id="stock-disponible">-</span></p>
+                    </div>
+
+                    <!-- Type de transfert -->
+                    <div>
+                        <label for="{{ form.type_transfert.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.type_transfert.label }} *
+                        </label>
+                        {{ form.type_transfert }}
+                        {% if form.type_transfert.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.type_transfert.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Statut -->
+                    <div>
+                        <label for="{{ form.statut.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.statut.label }}
+                        </label>
+                        {{ form.statut }}
+                        {% if form.statut.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.statut.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Priorité -->
+                    <div>
+                        <label for="{{ form.priorite.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.priorite.label }}
+                        </label>
+                        {{ form.priorite }}
+                        {% if form.priorite.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.priorite.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Origine et destination -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
+                        Origine et destination
+                    </h3>
+                    
+                    <!-- Lieu d'origine -->
+                    <div>
+                        <label for="{{ form.lieu_origine.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.lieu_origine.label }} *
+                        </label>
+                        {{ form.lieu_origine }}
+                        {% if form.lieu_origine.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.lieu_origine.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Contact origine -->
+                    <div>
+                        <label for="{{ form.contact_origine.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.contact_origine.label }}
+                        </label>
+                        {{ form.contact_origine }}
+                        {% if form.contact_origine.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.contact_origine.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Lieu de destination -->
+                    <div>
+                        <label for="{{ form.lieu_destination.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.lieu_destination.label }} *
+                        </label>
+                        {{ form.lieu_destination }}
+                        {% if form.lieu_destination.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.lieu_destination.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Contact destination -->
+                    <div>
+                        <label for="{{ form.contact_destination.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.contact_destination.label }}
+                        </label>
+                        {{ form.contact_destination }}
+                        {% if form.contact_destination.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.contact_destination.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Transporteur -->
+                    <div>
+                        <label for="{{ form.transporteur.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.transporteur.label }}
+                        </label>
+                        {{ form.transporteur }}
+                        {% if form.transporteur.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.transporteur.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Numéro de suivi -->
+                    <div>
+                        <label for="{{ form.numero_suivi.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.numero_suivi.label }}
+                        </label>
+                        {{ form.numero_suivi }}
+                        {% if form.numero_suivi.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.numero_suivi.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section dates -->
+            <div class="mt-6 space-y-4">
+                <h3 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
+                    Planification
+                </h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- Date prévue de livraison -->
+                    <div>
+                        <label for="{{ form.date_prevue_livraison.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.date_prevue_livraison.label }}
+                        </label>
+                        {{ form.date_prevue_livraison }}
+                        {% if form.date_prevue_livraison.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.date_prevue_livraison.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Date d'expédition -->
+                    {% if object and object.statut in 'EN_TRANSIT,LIVRE' %}
+                    <div>
+                        <label for="{{ form.date_expedition.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.date_expedition.label }}
+                        </label>
+                        {{ form.date_expedition }}
+                        {% if form.date_expedition.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.date_expedition.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Date de livraison -->
+                    {% if object and object.statut == 'LIVRE' %}
+                    <div>
+                        <label for="{{ form.date_livraison.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.date_livraison.label }}
+                        </label>
+                        {{ form.date_livraison }}
+                        {% if form.date_livraison.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.date_livraison.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Motif -->
+                <div>
+                    <label for="{{ form.motif.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.motif.label }}
+                    </label>
+                    {{ form.motif }}
+                    {% if form.motif.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.motif.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Observations -->
+                <div>
+                    <label for="{{ form.observations.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.observations.label }}
+                    </label>
+                    {{ form.observations }}
+                    {% if form.observations.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.observations.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="mt-8 flex justify-between pt-4 border-t border-gray-200">
+                <div class="flex space-x-4">
+                    {% if object and object.statut == 'EN_ATTENTE' and user.profile.role in 'MANAGER,TECHNICIEN' %}
+                    <button type="button" onclick="approveTransfer()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-check mr-2"></i>Approuver
+                    </button>
+                    {% endif %}
+                    {% if object and object.statut == 'APPROUVE' %}
+                    <button type="button" onclick="shipTransfer()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-truck mr-2"></i>Expédier
+                    </button>
+                    {% endif %}
+                    {% if object and object.statut == 'EN_TRANSIT' %}
+                    <button type="button" onclick="deliverTransfer()" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-check-circle mr-2"></i>Marquer livré
+                    </button>
+                    {% endif %}
+                </div>
+                
+                <div class="flex space-x-4">
+                    <a href="{% url 'inventory:transfert_list' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                        Annuler
+                    </a>
+                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        {% if object %}Mettre à jour{% else %}Créer le transfert{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mise à jour du stock disponible
+    const produitSelect = document.getElementById('{{ form.produit.id_for_label }}');
+    const quantiteInput = document.getElementById('{{ form.quantite.id_for_label }}');
+    const stockSpan = document.getElementById('stock-disponible');
+    
+    function updateStockInfo() {
+        if (produitSelect && produitSelect.value) {
+            // Ici, on ferait normalement un appel AJAX pour récupérer le stock
+            // Pour l'instant, on simule
+            fetch(`/api/produit/${produitSelect.value}/stock/`)
+                .then(response => response.json())
+                .then(data => {
+                    stockSpan.textContent = data.stock || 'N/A';
+                })
+                .catch(error => {
+                    stockSpan.textContent = 'Erreur';
+                });
+        }
+    }
+    
+    if (produitSelect) {
+        produitSelect.addEventListener('change', updateStockInfo);
+        updateStockInfo(); // Appel initial
+    }
+    
+    // Validation de la quantité
+    if (quantiteInput) {
+        quantiteInput.addEventListener('input', function() {
+            const quantite = parseInt(this.value);
+            const stockDisponible = parseInt(stockSpan.textContent);
+            
+            if (quantite && stockDisponible && quantite > stockDisponible) {
+                this.classList.add('border-red-500');
+                this.setAttribute('title', 'Quantité supérieure au stock disponible');
+            } else {
+                this.classList.remove('border-red-500');
+                this.removeAttribute('title');
+            }
+        });
+    }
+    
+    // Validation des dates
+    const datePrevue = document.getElementById('{{ form.date_prevue_livraison.id_for_label }}');
+    if (datePrevue) {
+        datePrevue.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                alert('La date de livraison ne peut pas être dans le passé.');
+                this.focus();
+            }
+        });
+    }
+});
+
+function approveTransfer() {
+    if (confirm('Êtes-vous sûr de vouloir approuver ce transfert ?')) {
+        document.getElementById('{{ form.statut.id_for_label }}').value = 'APPROUVE';
+        document.querySelector('form').submit();
+    }
+}
+
+function shipTransfer() {
+    if (confirm('Êtes-vous sûr de vouloir marquer ce transfert comme expédié ?')) {
+        document.getElementById('{{ form.statut.id_for_label }}').value = 'EN_TRANSIT';
+        // Définir la date d'expédition
+        const dateExpedition = document.getElementById('{{ form.date_expedition.id_for_label }}');
+        if (dateExpedition) {
+            const now = new Date();
+            dateExpedition.value = now.toISOString().slice(0, 16);
+        }
+        document.querySelector('form').submit();
+    }
+}
+
+function deliverTransfer() {
+    if (confirm('Êtes-vous sûr de vouloir marquer ce transfert comme livré ?')) {
+        document.getElementById('{{ form.statut.id_for_label }}').value = 'LIVRE';
+        // Définir la date de livraison
+        const dateLivraison = document.getElementById('{{ form.date_livraison.id_for_label }}');
+        if (dateLivraison) {
+            const now = new Date();
+            dateLivraison.value = now.toISOString().slice(0, 16);
+        }
+        document.querySelector('form').submit();
+    }
+}
+</script>
+{% endblock %}

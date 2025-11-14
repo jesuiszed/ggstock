@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture {{ commande.numero_commande }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+        }
+        .company-info {
+            flex: 1;
+        }
+        .company-info h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #7c3aed;
+        }
+        .document-info {
+            text-align: right;
+            flex: 1;
+        }
+        .document-info h2 {
+            margin: 0;
+            font-size: 18px;
+            background: #7c3aed;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .client-info, .invoice-info {
+            flex: 1;
+            margin-right: 20px;
+        }
+        .client-info h3, .invoice-info h3 {
+            margin-bottom: 10px;
+            font-size: 14px;
+            background: #f3f4f6;
+            padding: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .total-section {
+            width: 350px;
+            margin-left: auto;
+            margin-top: 20px;
+        }
+        .total-section table {
+            margin-bottom: 0;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #7c3aed;
+            color: white;
+        }
+        .subtotal-row {
+            background-color: #f8f9fa;
+        }
+        .payment-info {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #ede9fe;
+            border-left: 4px solid #7c3aed;
+        }
+        .notes {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #7c3aed;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 72px;
+            color: rgba(124, 58, 237, 0.1);
+            z-index: -1;
+            font-weight: bold;
+        }
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="watermark">FACTURE</div>
+
+    <div class="header">
+        <div class="company-info">
+            <h1>GG STOCK</h1>
+            <p><strong>Système de Gestion d'Inventaire</strong></p>
+            <p>123 Rue de l'Entreprise<br>
+               75001 Paris, France<br>
+               Tél: +33 1 23 45 67 89<br>
+               Email: contact@ggstock.com<br>
+               SIRET: 123 456 789 00010<br>
+               TVA: FR12123456789</p>
+        </div>
+        <div class="document-info">
+            <h2>FACTURE</h2>
+            <table>
+                <tr><td><strong>N° Facture:</strong></td><td>F-{{ commande.numero_commande }}</td></tr>
+                <tr><td><strong>N° Commande:</strong></td><td>{{ commande.numero_commande }}</td></tr>
+                <tr><td><strong>Date facture:</strong></td><td>{{ "now"|date:"d/m/Y" }}</td></tr>
+                <tr><td><strong>Date commande:</strong></td><td>{{ commande.date_commande|date:"d/m/Y" }}</td></tr>
+                <tr><td><strong>Échéance:</strong></td><td>{{ "now"|date:"d/m/Y" }}</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="invoice-details">
+        <div class="client-info">
+            <h3>FACTURÉ À</h3>
+            <p><strong>{{ commande.client.get_full_name }}</strong></p>
+            {% if commande.client.email %}<p>Email: {{ commande.client.email }}</p>{% endif %}
+            {% if commande.client.telephone %}<p>Téléphone: {{ commande.client.telephone }}</p>{% endif %}
+            {% if commande.client.adresse %}
+            <p>{{ commande.client.adresse }}</p>
+            {% if commande.client.ville %}
+            <p>
+                {% if commande.client.code_postal %}{{ commande.client.code_postal }} {% endif %}{{ commande.client.ville }}
+            </p>
+            {% endif %}
+            {% endif %}
+        </div>
+        <div class="invoice-info">
+            <h3>INFORMATIONS DE PAIEMENT</h3>
+            <p><strong>Mode de paiement:</strong> À réception</p>
+            <p><strong>Conditions:</strong> Paiement à 30 jours</p>
+            <p><strong>Devise:</strong> F CFA( F CFA)</p>
+            <p><strong>Statut:</strong> <span style="color: #059669; font-weight: bold;">LIVRÉ</span></p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 15%;">Référence</th>
+                <th style="width: 35%;">Produit</th>
+                <th style="width: 10%;" class="text-center">Qté</th>
+                <th style="width: 15%;" class="text-right">Prix HT</th>
+                <th style="width: 10%;" class="text-center">TVA</th>
+                <th style="width: 15%;" class="text-right">Total HT</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ligne in lignes %}
+            <tr>
+                <td>{{ ligne.produit.reference }}</td>
+                <td>
+                    <strong>{{ ligne.produit.nom }}</strong>
+                    {% if ligne.produit.description %}
+                    <br><small style="color: #666;">{{ ligne.produit.description|truncatewords:10 }}</small>
+                    {% endif %}
+                </td>
+                <td class="text-center">{{ ligne.quantite }}</td>
+                <td class="text-right">{{ ligne.prix_unitaire|floatformat:2 }} F CFA</td>
+                <td class="text-center">20%</td>
+                <td class="text-right">{{ ligne.sous_total|floatformat:2 }} F CFA</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total-section">
+        <table>
+            <tr>
+                <td style="width: 70%;">Total HT :</td>
+                <td class="text-right" style="width: 30%;">{{ commande.sous_total|floatformat:2 }} F CFA</td>
+            </tr>
+            {% if commande.remise > 0 %}
+            <tr>
+                <td>Remise :</td>
+                <td class="text-right" style="color: #dc2626;">-{{ commande.remise|floatformat:2 }} F CFA</td>
+            </tr>
+            {% endif %}
+            <tr class="subtotal-row">
+                <td>Base TVA 20% :</td>
+                <td class="text-right">{{ commande.sous_total|floatformat:2 }} F CFA</td>
+            </tr>
+            <tr class="subtotal-row">
+                <td>Montant TVA 20% :</td>
+                <td class="text-right">{{ commande.tva|floatformat:2 }} F CFA</td>
+            </tr>
+            <tr class="total-row">
+                <td><strong>TOTAL TTC :</strong></td>
+                <td class="text-right"><strong>{{ commande.total|floatformat:2 }} F CFA</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="payment-info">
+        <h4 style="margin: 0 0 10px 0; color: #7c3aed;">INFORMATIONS DE PAIEMENT</h4>
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <p><strong>Coordonnées bancaires :</strong></p>
+                <p>IBAN: FR76 1234 5678 9012 3456 789<br>
+                   BIC: GGSTOCKFR<br>
+                   Banque: Banque GG STOCK</p>
+            </div>
+            <div style="text-align: right;">
+                <p><strong>À payer avant le :</strong></p>
+                <p style="font-size: 16px; font-weight: bold; color: #7c3aed;">
+                    {{ "now"|date:"d/m/Y" }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {% if commande.notes %}
+    <div class="notes">
+        <h4 style="margin-top: 0;">Notes :</h4>
+        <p>{{ commande.notes }}</p>
+    </div>
+    {% endif %}
+
+    <div style="margin-top: 30px; padding: 15px; background: #fef2f2; border-left: 4px solid #dc2626;">
+        <h4 style="margin: 0 0 10px 0; color: #dc2626;">Conditions générales :</h4>
+        <ul style="margin: 0; padding-left: 20px; font-size: 11px;">
+            <li>Paiement à 30 jours à compter de la date de facture</li>
+            <li>Pénalités de retard : 3 fois le taux légal</li>
+            <li>Indemnité forfaitaire de recouvrement : 40 F CFA</li>
+            <li>Escompte pour paiement anticipé : nous consulter</li>
+            <li>En cas de retard de paiement, nous nous réservons le droit de suspendre les livraisons</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p><strong>GG STOCK - Système de Gestion d'Inventaire</strong></p>
+        <p>SARL au capital de 10 000 F CFA - SIRET: 123 456 789 00010 - APE: 4651Z</p>
+        <p>Facture générée le {{ "now"|date:"d/m/Y à H:i" }} | N° TVA intracommunautaire: FR12123456789</p>
+    </div>
+
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

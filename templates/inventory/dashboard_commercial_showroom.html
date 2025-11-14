@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Commercial 1 - {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block page_title %}
+    <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+            <i class="fas fa-shopping-cart text-white"></i>
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Dashboard Commercial 1</h1>
+            <p class="text-gray-600">Gestion des clients, ventes et commandes</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    
+    <!-- Statistiques principales -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-100">Ventes ce mois</p>
+                    <p class="text-3xl font-bold">{{ mes_ventes.count|default:0 }}</p>
+                </div>
+                <i class="fas fa-chart-line text-blue-200 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100">CA Ventes</p>
+                    <p class="text-3xl font-bold">{{ mes_ventes.total|floatformat:0|default:0 }}</p>
+                </div>
+                <span class="text-green-200 text-l font-bold">F CFA</span>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-100">Commandes ce mois</p>
+                    <p class="text-3xl font-bold">{{ mes_commandes.count|default:0 }}</p>
+                </div>
+                <i class="fas fa-shopping-cart text-purple-200 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100">CA Commandes</p>
+                    <p class="text-3xl font-bold">{{ mes_commandes.total|floatformat:0|default:0 }}F CFA</p>
+                </div>
+                <i class="fas fa-receipt text-orange-200 text-2xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides Commercial Showroom -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+            <i class="fas fa-bolt text-blue-500 mr-2"></i>Actions Rapides
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <a href="{% url 'inventory:vente_create' %}" class="bg-green-50 hover:bg-green-100 p-4 rounded-lg border border-green-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-plus-circle text-green-600"></i>
+                    <span class="font-medium text-green-800">Nouvelle Vente</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'inventory:produits_list' %}" class="bg-blue-50 hover:bg-blue-100 p-4 rounded-lg border border-blue-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-box text-blue-600"></i>
+                    <span class="font-medium text-blue-800">Catalogue Produits</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'inventory:ventes_list' %}" class="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition duration-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-history text-purple-600"></i>
+                    <span class="font-medium text-purple-800">Historique Ventes</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Produits populaires et stock bas -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Produits les plus vendus -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Produits Populaires</h3>
+            </div>
+            <div class="p-6">
+                {% if produits_populaires %}
+                    <div class="space-y-3">
+                        {% for produit in produits_populaires %}
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                            <div>
+                                <p class="font-medium">{{ produit.nom }}</p>
+                                <p class="text-sm text-gray-500">{{ produit.prix_vente }}F CFA</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-bold text-blue-600">Stock: {{ produit.quantite_stock }}</span>
+                                {% if produit.quantite_stock <= produit.seuil_alerte %}
+                                    <p class="text-red-500 text-xs">⚠️ Stock bas</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">Aucun produit populaire</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Dernières ventes -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Dernières Ventes</h3>
+            </div>
+            <div class="p-6">
+                {% if dernieres_ventes %}
+                    <div class="space-y-3">
+                        {% for vente in dernieres_ventes %}
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                            <div>
+                                <p class="font-medium">{{ vente.client.nom }}</p>
+                                <p class="text-sm text-gray-500">{{ vente.date_vente|date:"d/m/Y H:i" }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-bold text-green-600">{{ vente.total }}F CFA</span>
+                                <p class="text-xs text-gray-500">{{ vente.lignes.count }} article{{ vente.lignes.count|pluralize }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">Aucune vente récente</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Conseils pour Commercial Showroom -->
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-lightbulb text-blue-400"></i>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">Conseils du jour</h3>
+                <div class="mt-2 text-sm text-blue-700">
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Vérifiez régulièrement les stocks des produits populaires</li>
+                        <li>Proposez des produits complémentaires lors des ventes</li>
+                        <li>Tenez informé le manager des ruptures de stock</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
