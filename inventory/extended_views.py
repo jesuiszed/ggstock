@@ -367,7 +367,16 @@ def devis_edit(request, pk):
 @login_required
 @role_required(['COMMERCIAL_TERRAIN', 'MANAGER'])
 def devis_pdf(request, pk):
-    """Générer un PDF pour un devis"""
+    """Générer un PDF professionnel pour un devis"""
+    from django.template.loader import render_to_string
+    from weasyprint import HTML
+    from django.http import HttpResponse
+    from decimal import Decimal
+    from datetime import datetime
+    from django.conf import settings
+    import os
+    
+    # Récupérer le devis
     devis = get_object_or_404(Devis, pk=pk)
     
     # Vérifier les permissions
@@ -375,85 +384,37 @@ def devis_pdf(request, pk):
         messages.error(request, "Vous n'avez pas accès à ce devis.")
         return redirect('inventory:devis_list')
     
-    # Créer le PDF
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="devis_{devis.numero_devis}.pdf"'
+    # Récupérer les lignes du devis
+    lignes_devis = devis.lignedevis_set.all()
     
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    # Calculer TVA et Total TTC
+    tva = devis.total * Decimal('0.18')  # TVA 18%
+    total_ttc = devis.total + tva
     
-    # Styles
-    styles = getSampleStyleSheet()
-    elements = []
+    # Chemin absolu vers le logo
+    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo.png')
     
-    # En-tête
-    elements.append(Paragraph(f"DEVIS N° {devis.numero_devis}", styles['Title']))
-    elements.append(Spacer(1, 20))
+    # Préparer le contexte
+    context = {
+        'devis': devis,
+        'lignes_devis': lignes_devis,
+        'tva': tva,
+        'total_ttc': total_ttc,
+        'now': datetime.now(),
+        'logo_path': logo_path,
+        'STATIC_ROOT': os.path.join(settings.BASE_DIR, 'static'),
+    }
     
-    # Informations client
-    client_info = f"""
-    <b>Client:</b> {devis.client.nom_complet}<br/>
-    <b>Entreprise:</b> {devis.client.entreprise}<br/>
-    <b>Email:</b> {devis.client.email}<br/>
-    <b>Téléphone:</b> {devis.client.telephone}<br/>
-    """
-    elements.append(Paragraph(client_info, styles['Normal']))
-    elements.append(Spacer(1, 20))
+    # Rendre le template HTML
+    html_string = render_to_string('inventory/devis_pdf.html', context)
     
-    # Informations devis
-    devis_info = f"""
-    <b>Date de création:</b> {devis.date_creation.strftime('%d/%m/%Y')}<br/>
-    <b>Valide jusqu'au:</b> {devis.date_validite.strftime('%d/%m/%Y')}<br/>
-    <b>Commercial:</b> {devis.commercial.get_full_name()}<br/>
-    <b>Statut:</b> {devis.get_statut_display()}
-    """
-    elements.append(Paragraph(devis_info, styles['Normal']))
-    elements.append(Spacer(1, 20))
+    # Générer le PDF avec WeasyPrint
+    html = HTML(string=html_string, base_url=request.build_absolute_uri())
+    pdf_file = html.write_pdf()
     
-    # Tableau des lignes
-    data = [['Produit', 'Quantité', 'Prix unitaire', 'Remise', 'Sous-total']]
-    
-    for ligne in devis.lignedevis_set.all():
-        data.append([
-            ligne.produit.nom,
-            str(ligne.quantite),
-            f"{ligne.prix_unitaire:.2f} F CFA",
-            f"{ligne.remise:.2f}%",
-            f"{ligne.sous_total():.2f} F CFA"
-        ])
-    
-    # Total
-    data.append(['', '', '', 'TOTAL', f"{devis.total:.2f} F CFA"])
-    
-    table = Table(data)
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 14),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black)
-    ]))
-    
-    elements.append(table)
-    
-    # Notes
-    if devis.notes:
-        elements.append(Spacer(1, 20))
-        elements.append(Paragraph(f"<b>Notes:</b> {devis.notes}", styles['Normal']))
-    
-    # Conditions particulières
-    if devis.conditions_particulieres:
-        elements.append(Spacer(1, 20))
-        elements.append(Paragraph(f"<b>Conditions particulières:</b> {devis.conditions_particulieres}", styles['Normal']))
-    
-    # Construire le PDF
-    doc.build(elements)
-    pdf = buffer.getvalue()
-    buffer.close()
-    response.write(pdf)
+    # Créer la réponse HTTP
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Devis_{devis.numero_devis}.pdf"'
     
     return response
 
@@ -894,3 +855,9 @@ def transfert_edit(request, pk):
         'object': transfert,
     }
     return render(request, 'inventory/transfert_form.html', context)
+
+
+# ========================================
+# GÉNÉRATION PDF DEVIS
+# ========================================
+

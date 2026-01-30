@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 from . import extended_views
+from . import views_prospection
+from . import views_pdf_commandes
 
 app_name = 'inventory'
 
@@ -34,14 +36,15 @@ urlpatterns = [
     path('commandes/', views.commandes_list, name='commandes_list'),
     path('commandes/guide/', views.commandes_guide, name='commandes_guide'),
     path('commandes/<int:pk>/', views.commande_detail, name='commande_detail'),
-    path('commandes/nouvelle/', views.commande_create, name='commande_create'),
+    path('commandes/nouvelle/', views.commande_create_advanced, name='commande_create'),
     path('commandes/avancee/', views.commande_create_advanced, name='commande_create_advanced'),
     path('commandes/<int:pk>/modifier/', views.commande_update, name='commande_update'),
     path('commandes/<int:pk>/supprimer/', views.commande_delete, name='commande_delete'),
-    path('commandes/<int:pk>/bon-commande/', views.commande_print_bon, name='commande_print_bon'),
-    path('commandes/<int:pk>/bon-livraison/', views.commande_print_livraison, name='commande_print_livraison'),
-    path('commandes/<int:pk>/proforma/', views.commande_print_proforma, name='commande_print_proforma'),
-    path('commandes/<int:commande_id>/pdf/', views.commande_generate_pdf, name='commande_generate_pdf'),
+    
+    # PDF Commandes (nouvelles versions WeasyPrint)
+    path('commandes/<int:pk>/bon-commande/', views_pdf_commandes.commande_print_bon_weasyprint, name='commande_print_bon'),
+    path('commandes/<int:pk>/bon-livraison/', views_pdf_commandes.commande_print_livraison_weasyprint, name='commande_print_livraison'),
+    path('commandes/<int:pk>/proforma/', views_pdf_commandes.commande_print_proforma_weasyprint, name='commande_print_proforma'),
     
     # Gestion des ventes
     path('ventes/', views.ventes_list, name='ventes_list'),
@@ -104,4 +107,17 @@ urlpatterns = [
     path('transferts/<int:pk>/', extended_views.transfert_detail, name='transfert_detail'),
     path('transferts/nouveau/', extended_views.transfert_create, name='transfert_create'),
     path('transferts/<int:pk>/modifier/', extended_views.transfert_edit, name='transfert_edit'),
+    
+    # ========== PROSPECTION TÉLÉPHONIQUE (COMMERCIAUX) ==========
+    
+    # Liste et CRUD
+    path('prospection/', views_prospection.prospection_list, name='prospection_list'),
+    path('prospection/<int:pk>/', views_prospection.prospection_detail, name='prospection_detail'),
+    path('prospection/nouvelle/', views_prospection.prospection_create, name='prospection_create'),
+    path('prospection/<int:pk>/modifier/', views_prospection.prospection_edit, name='prospection_edit'),
+    path('prospection/<int:pk>/supprimer/', views_prospection.prospection_delete, name='prospection_delete'),
+    
+    # Export et statistiques
+    path('prospection/export/excel/', views_prospection.prospection_export_excel, name='prospection_export_excel'),
+    path('prospection/stats/api/', views_prospection.prospection_stats_api, name='prospection_stats_api'),
 ]

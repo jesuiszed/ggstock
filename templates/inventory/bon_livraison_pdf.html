@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bon de Livraison {{ commande.numero_commande }}</title>
+    {% include 'inventory/pdf_base_styles.html' %}
+    <style>
+        /* Couleurs spécifiques pour bon de livraison - Violet */
+        body::before {
+            opacity: 0.04;
+        }
+    </style>
+</head>
+<body style="--primary-color: #8b5cf6; --light-bg: #f5f3ff;">
+    <!-- EN-TÊTE -->
+    <div class="header">
+        <div class="logo-section">
+            <img src="file:///{{ logo_path }}" alt="DIMAT MEDICAL Logo" class="logo" onerror="this.style.display='none'">
+            <div class="company-name">DIMAT MEDICAL</div>
+            <div class="company-info">
+                <strong>Zybio Business Manager - Sénégal</strong><br>
+                Adresse : Dakar, Sénégal<br>
+                Tél : +221 XX XXX XX XX<br>
+                Email : contact@dimatmedical.sn
+            </div>
+        </div>
+        
+        <div class="doc-title">
+            <h1>BON DE LIVRAISON</h1>
+            <div class="doc-number">N° {{ commande.numero_commande }}</div>
+        </div>
+    </div>
+    
+    <!-- INFORMATIONS FOURNISSEUR ET LIVRAISON -->
+    <div class="info-section">
+        <div class="info-box">
+            <div class="info-title">Fournisseur / Expéditeur</div>
+            <div class="info-content">
+                <div><span class="info-label">Nom :</span> {{ commande.fournisseur.nom }}</div>
+                <div><span class="info-label">Adresse :</span> {{ commande.fournisseur.adresse }}</div>
+                <div><span class="info-label">Ville :</span> {{ commande.fournisseur.ville }}, {{ commande.fournisseur.pays }}</div>
+                <div><span class="info-label">Téléphone :</span> {{ commande.fournisseur.telephone }}</div>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <div class="info-title">Destinataire / Réception</div>
+            <div class="info-content">
+                <div><span class="info-label">Date livraison :</span> {{ now|date:"d/m/Y" }}</div>
+                <div><span class="info-label">Commande N° :</span> {{ commande.numero_commande }}</div>
+                <div><span class="info-label">Date commande :</span> {{ commande.date_commande|date:"d/m/Y" }}</div>
+                <div><span class="info-label">Réceptionné par :</span> DIMAT MEDICAL</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TABLEAU DES PRODUITS LIVRÉS -->
+    <div class="products-section no-page-break">
+        <div class="section-title">Détail des Produits Livrés</div>
+        
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">N°</th>
+                        <th style="width: 40%;">Désignation</th>
+                        <th style="width: 15%;">Référence</th>
+                        <th class="center" style="width: 12%;">Qté Commandée</th>
+                        <th class="center" style="width: 12%;">Qté Livrée</th>
+                        <th class="center" style="width: 12%;">État</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ligne in lignes_commande %}
+                    <tr>
+                        <td class="center">{{ forloop.counter }}</td>
+                        <td class="product-name">{{ ligne.produit.nom }}</td>
+                        <td>{{ ligne.produit.reference }}</td>
+                        <td class="center">{{ ligne.quantite }}</td>
+                        <td class="center">{{ ligne.quantite_recue|default:ligne.quantite }}</td>
+                        <td class="center">
+                            {% if ligne.quantite_recue %}
+                                {% if ligne.quantite_recue == ligne.quantite %}
+                                    ✓ Complet
+                                {% else %}
+                                    ⚠ Partiel
+                                {% endif %}
+                            {% else %}
+                                ✓ Complet
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- RÉSUMÉ DE LA LIVRAISON -->
+    <div class="totals-section">
+        <div class="totals-box">
+            <div class="total-row">
+                <span class="total-label">Nombre total d'articles :</span>
+                <span class="total-value">{{ lignes_commande|length }}</span>
+            </div>
+            <div class="total-row">
+                <span class="total-label">Quantité totale commandée :</span>
+                <span class="total-value">{{ total_quantite }}</span>
+            </div>
+            <div class="total-row final">
+                <span class="total-label">Quantité totale livrée :</span>
+                <span class="total-value">{{ total_quantite_livree|default:total_quantite }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CONDITIONS DE LIVRAISON -->
+    <div class="conditions-section">
+        <div class="section-title">Conditions de Livraison et Réception</div>
+        <div class="conditions-box">
+            <div class="condition-item">
+                <strong>Vérification à la réception :</strong> Le destinataire s'engage à vérifier la conformité et la quantité des produits livrés en présence du livreur
+            </div>
+            <div class="condition-item">
+                <strong>Réserves :</strong> Toute réserve concernant l'état des produits, l'emballage ou la quantité doit être notée sur ce bon de livraison avant signature
+            </div>
+            <div class="condition-item">
+                <strong>Délai de réclamation :</strong> Toute réclamation doit être formulée par écrit dans les 48 heures suivant la réception
+            </div>
+            <div class="condition-item">
+                <strong>Documents joints :</strong> Certificats de conformité, fiches techniques, manuels d'utilisation (le cas échéant)
+            </div>
+            <div class="condition-item">
+                <strong>Condition des produits :</strong> Les produits sont livrés en bon état apparent, emballés conformément aux standards
+            </div>
+        </div>
+    </div>
+    
+    <!-- OBSERVATIONS ET RÉSERVES -->
+    <div class="notes-section">
+        <div class="section-title">Observations / Réserves</div>
+        <div class="notes-content" style="min-height: 80px; background: white; border: 1px solid #d1d5db;">
+            {% if commande.notes %}
+                {{ commande.notes }}
+            {% else %}
+                <br><br><br>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- SECTION SIGNATURE -->
+    <div class="signature-section">
+        <div class="lu-approuve">
+            "Marchandise livrée en bon état - Signatures requises"<br>
+            La signature de ce document vaut acceptation de la livraison
+        </div>
+        
+        <div class="signatures">
+            <div class="signature-box">
+                <div class="signature-title">Le Livreur</div>
+                <div style="margin: 20px 0;">
+                    <div style="font-size: 9pt; color: #666; margin-bottom: 5px;">Nom et prénom :</div>
+                    <div style="border-bottom: 1px solid #333; height: 20px;"></div>
+                </div>
+                <div class="signature-line">
+                    Signature et Date<br>
+                    {{ commande.fournisseur.nom }}
+                </div>
+            </div>
+            
+            <div class="signature-box">
+                <div class="signature-title">Le Réceptionnaire</div>
+                <div style="margin: 20px 0;">
+                    <div style="font-size: 9pt; color: #666; margin-bottom: 5px;">Nom et prénom :</div>
+                    <div style="border-bottom: 1px solid #333; height: 20px;"></div>
+                </div>
+                <div class="signature-line">
+                    Signature, Date et Cachet<br>
+                    DIMAT MEDICAL
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FOOTER -->
+    <div class="footer">
+        Bon de livraison généré le {{ now|date:"d/m/Y à H:i" }} - DIMAT MEDICAL / Zybio Business Manager Sénégal<br>
+        Document officiel de réception - Conserver en double exemplaire
+    </div>
+</body>
+</html>

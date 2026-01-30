@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- En-tête -->
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-phone-volume text-blue-600 mr-3"></i>
+                {{ title }}
+            </h1>
+            <a href="{% url 'inventory:prospection_list' %}" 
+               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Retour à la liste
+            </a>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <form method="post" id="prospectionForm" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Messages d'erreur -->
+                {% if form.errors %}
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-red-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700 font-medium">Erreurs détectées :</p>
+                            <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Type d'appel (obligatoire) -->
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-phone-square-alt text-blue-600 mr-2"></i>
+                        {{ form.type_appel.label }} <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.type_appel }}
+                    <p class="text-xs text-gray-600 mt-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Sélectionnez d'abord le type d'appel pour adapter le formulaire
+                    </p>
+                </div>
+
+                <!-- Informations de base -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Nom complet -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user text-blue-500 mr-2"></i>
+                            {{ form.nom_complet.label }} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.nom_complet }}
+                    </div>
+
+                    <!-- Numéro téléphone -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-phone text-green-500 mr-2"></i>
+                            {{ form.numero_telephone.label }} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.numero_telephone }}
+                    </div>
+                </div>
+
+                <!-- Email (appel sortant uniquement) -->
+                <div id="email-field" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-envelope text-purple-500 mr-2"></i>
+                        {{ form.email.label }}
+                    </label>
+                    {{ form.email }}
+                    <p class="text-xs text-gray-600 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Obligatoire pour les appels sortants
+                    </p>
+                </div>
+
+                <!-- Source prospect (appel entrant uniquement) -->
+                <div id="source-field" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-bullseye text-orange-500 mr-2"></i>
+                        {{ form.source_prospect.label }}
+                    </label>
+                    {{ form.source_prospect }}
+                    <p class="text-xs text-gray-600 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Obligatoire pour les appels entrants
+                    </p>
+                </div>
+
+                <!-- Statut et Date RDV -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Statut -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-flag text-red-500 mr-2"></i>
+                            {{ form.statut.label }} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.statut }}
+                    </div>
+
+                    <!-- Date RDV -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar-alt text-yellow-500 mr-2"></i>
+                            {{ form.date_rdv.label }}
+                        </label>
+                        {{ form.date_rdv }}
+                        <p class="text-xs text-gray-600 mt-1">Facultatif</p>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-sticky-note text-yellow-500 mr-2"></i>
+                        {{ form.description.label }} <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.description }}
+                    <p class="text-xs text-gray-600 mt-1">
+                        Notez les besoins identifiés, les remarques importantes, le suivi nécessaire...
+                    </p>
+                </div>
+
+                <!-- Guide des statuts -->
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">
+                        <i class="fas fa-question-circle mr-2"></i>Guide des statuts
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                        <div class="flex items-start">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-300 mr-2">RDV</span>
+                            <span class="text-gray-600">Rendez-vous fixé avec le prospect</span>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-300 mr-2">BV</span>
+                            <span class="text-gray-600">Bon de visite en attente</span>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-300 mr-2">Client acquis</span>
+                            <span class="text-gray-600">Prospect converti en client</span>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 border border-gray-300 mr-2">À relancer</span>
+                            <span class="text-gray-600">Nécessite un suivi ultérieur</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="flex flex-col sm:flex-row justify-end items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200">
+                    <a href="{% url 'inventory:prospection_list' %}" 
+                       class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg transition duration-200 text-center font-medium">
+                        <i class="fas fa-times mr-2"></i>Annuler
+                    </a>
+                    <button type="submit" 
+                            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition duration-200 font-medium">
+                        <i class="fas fa-save mr-2"></i>
+                        {% if action == 'create' %}Créer la prospection{% else %}Mettre à jour{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeAppelSelect = document.getElementById('id_type_appel');
+    const emailField = document.getElementById('email-field');
+    const sourceField = document.getElementById('source-field');
+    const emailInput = document.getElementById('id_email');
+    const sourceInput = document.getElementById('id_source_prospect');
+    
+    function updateFieldsVisibility() {
+        const typeAppel = typeAppelSelect.value;
+        
+        if (typeAppel === 'SORTANT') {
+            // Appel sortant: montrer email, cacher source
+            emailField.classList.remove('hidden');
+            sourceField.classList.add('hidden');
+            emailInput.required = true;
+            sourceInput.required = false;
+            sourceInput.value = '';  // Vider le champ source
+        } else if (typeAppel === 'ENTRANT') {
+            // Appel entrant: cacher email, montrer source
+            emailField.classList.add('hidden');
+            sourceField.classList.remove('hidden');
+            emailInput.required = false;
+            sourceInput.required = true;
+            emailInput.value = '';  // Vider le champ email
+        } else {
+            // Aucun type sélectionné
+            emailField.classList.add('hidden');
+            sourceField.classList.add('hidden');
+            emailInput.required = false;
+            sourceInput.required = false;
+        }
+    }
+    
+    // Initialiser la visibilité au chargement
+    updateFieldsVisibility();
+    
+    // Mettre à jour la visibilité quand le type change
+    typeAppelSelect.addEventListener('change', updateFieldsVisibility);
+    
+    // Validation du formulaire
+    document.getElementById('prospectionForm').addEventListener('submit', function(e) {
+        const typeAppel = typeAppelSelect.value;
+        
+        if (!typeAppel) {
+            e.preventDefault();
+            alert('⚠️ Veuillez sélectionner un type d\'appel (Sortant ou Entrant)');
+            typeAppelSelect.focus();
+            return false;
+        }
+        
+        if (typeAppel === 'SORTANT' && !emailInput.value.trim()) {
+            e.preventDefault();
+            alert('⚠️ L\'email est obligatoire pour un appel sortant');
+            emailInput.focus();
+            return false;
+        }
+        
+        if (typeAppel === 'ENTRANT' && !sourceInput.value) {
+            e.preventDefault();
+            alert('⚠️ La source de prospect est obligatoire pour un appel entrant');
+            sourceInput.focus();
+            return false;
+        }
+    });
+});
+</script>
+
+<style>
+/* Animation pour les champs qui apparaissent */
+#email-field, #source-field {
+    transition: all 0.3s ease;
+}
+
+/* Effet hover sur les inputs */
+input:focus, select:focus, textarea:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

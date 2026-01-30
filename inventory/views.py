@@ -816,55 +816,135 @@ def commande_detail(request, pk):
 
 @login_required
 def commande_create(request):
+    """Créer une nouvelle commande avec parsing manuel des lignes"""
     if request.method == 'POST':
         form = CommandeForm(request.POST)
+        
         if form.is_valid():
-            commande = form.save(commit=False)
-            commande.utilisateur = request.user
-            commande.save()
-            
-            # Traitement des produits
-            products_added = False
-            post_data = request.POST
-            
-            for key in post_data.keys():
-                if key.startswith('produit_'):
-                    suffix = key.split('_')[-1]
-                    produit_id = post_data.get(f'produit_{suffix}')
-                    quantite = post_data.get(f'quantite_{suffix}')
-                    prix_unitaire = post_data.get(f'prix_unitaire_{suffix}')
+            try:
+                with transaction.atomic():
+                    commande = form.save(commit=False)
+                    commande.utilisateur = request.user
+                    commande.save()
                     
-                    if produit_id and quantite and prix_unitaire:
+                    # Traitement des lignes de produit - LOGIQUE ROBUSTE
+                    lines_created = 0
+                    has_error = False
+                    
+                    # Parser toutes les clés POST pour trouver TOUTES les lignes de produit
+                    lines_data = {}
+                    for key in request.POST:
+                        if key.startswith('ligne_') and '_' in key:
+                            parts = key.split('_', 2)
+                            if len(parts) == 3:
+                                line_idx = parts[1]
+                                field_name = parts[2]
+                                
+                                if line_idx not in lines_data:
+                                    lines_data[line_idx] = {}
+                                lines_data[line_idx][field_name] = request.POST[key]
+                    
+                    print(f"=== DEBUG COMMANDE_CREATE ===")
+                    print(f"POST data: {request.POST}")
+                    print(f"Lignes trouvées: {sorted(lines_data.keys())}")
+                    
+                    # Traiter chaque ligne trouvée (triée par index)
+                    for line_idx in sorted(lines_data.keys(), key=lambda x: int(x) if x.isdigit() else 0):
+                        data = lines_data[line_idx]
+                        produit_id = data.get('produit')
+                        quantite = data.get('quantite')
+                        prix_unitaire = data.get('prix_unitaire')
+                        
+                        print(f"Traitement ligne {line_idx}: produit={produit_id}, quantite={quantite}, prix={prix_unitaire}")
+                        
+                        # Ignorer les lignes vides
+                        if not produit_id:
+                            print(f"Ligne {line_idx} ignorée (pas de produit)")
+                            continue
+                        
+                        # Vérifier que tous les champs requis sont présents
+                        if not quantite or not prix_unitaire:
+                            messages.error(request, f'Ligne {int(line_idx) + 1}: Quantité et prix requis')
+                            has_error = True
+                            continue
+                        
                         try:
                             produit = Produit.objects.get(id=produit_id)
-                            LigneCommande.objects.create(
+                            quantite = int(quantite)
+                            prix_unitaire = float(prix_unitaire)
+                            
+                            # Validation
+                            if quantite <= 0:
+                                messages.error(request, f'{produit.nom}: La quantité doit être positive')
+                                has_error = True
+                                continue
+                            
+                            if prix_unitaire < 0:
+                                messages.error(request, f'{produit.nom}: Le prix ne peut pas être négatif')
+                                has_error = True
+                                continue
+                            
+                            # Vérifier le stock disponible (warning, pas bloquant)
+                            if quantite > produit.quantite_stock:
+                                messages.warning(request, f'{produit.nom}: Stock insuffisant ({produit.quantite_stock} disponibles)')
+                            
+                            # Créer la ligne de commande
+                            ligne = LigneCommande.objects.create(
                                 commande=commande,
                                 produit=produit,
-                                quantite=int(quantite),
-                                prix_unitaire=float(prix_unitaire)
+                                quantite=quantite,
+                                prix_unitaire=prix_unitaire
                             )
-                            products_added = True
-                        except (Produit.DoesNotExist, ValueError):
+                            lines_created += 1
+                            print(f"✓ Ligne {line_idx} créée: {ligne}")
+                            
+                        except Produit.DoesNotExist:
+                            messages.error(request, f'Ligne {int(line_idx) + 1}: Produit introuvable')
+                            has_error = True
                             continue
-            
-            if products_added:
-                # Recalculer les totaux de la commande
-                commande.calculer_total()
-                commande.save()
-                
-            messages.success(request, f'La commande {commande.numero_commande} a été créée avec succès.')
-            return redirect('inventory:commande_detail', pk=commande.pk)
+                        except (ValueError, TypeError) as e:
+                            messages.error(request, f'Ligne {int(line_idx) + 1}: Erreur de conversion - {str(e)}')
+                            has_error = True
+                            continue
+                    
+                    print(f"✓ Total de lignes créées: {lines_created}")
+                    
+                    # Si erreur détectée, annuler la transaction
+                    if has_error:
+                        raise ValueError('Erreurs détectées dans les lignes')
+                    
+                    # Vérifier qu'au moins une ligne a été créée
+                    if lines_created == 0:
+                        messages.error(request, 'Une commande doit contenir au moins un produit')
+                        raise ValueError('Aucune ligne de produit')
+                    
+                    # Calculer le total
+                    commande.calculer_total()
+                    
+                    messages.success(request, f'Commande {commande.numero_commande} créée avec succès ({lines_created} ligne(s)).')
+                    return redirect('inventory:commande_detail', pk=commande.pk)
+                    
+            except ValueError as e:
+                # Erreur de validation, le formulaire sera réaffiché avec les erreurs
+                print(f"Erreur de validation: {e}")
+                messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
+        else:
+            messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
     else:
         form = CommandeForm()
     
     # Récupérer tous les produits actifs pour le formulaire
     produits = Produit.objects.filter(actif=True).order_by('nom')
-    
-    return render(request, 'inventory/commande_create_advanced.html', {
+    clients = Client.objects.filter(actif=True).order_by('nom', 'prenom')
+
+    context = {
         'form': form,
         'title': 'Nouvelle Commande',
         'produits': produits,
-    })
+        'clients': clients
+    }
+    
+    return render(request, 'inventory/commande_form.html', context)
 
 
 # Company information for all documents - Style DIMAT MEDICAL
@@ -955,219 +1035,52 @@ def build_footer(canvas, doc):
 
 @login_required
 def commande_print_bon(request, pk):
-    """Générer le bon de commande en PDF selon le modèle DIMAT MEDICAL"""
+    """Générer le bon de commande en PDF professionnel avec WeasyPrint"""
+    from django.template.loader import render_to_string
+    from weasyprint import HTML
     from django.http import HttpResponse
-    from reportlab.lib import colors
-    from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch, cm
-    from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
-    from io import BytesIO
     from decimal import Decimal
+    from datetime import datetime
     
     commande = get_object_or_404(Commande, pk=pk)
-    lignes = LigneCommande.objects.filter(commande=commande).select_related('produit')
+    lignes_commande = LigneCommande.objects.filter(commande=commande).select_related('produit')
     
-    # Créer le PDF en mémoire
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=1*cm, bottomMargin=2*cm)
-    story = []
+    # Calculer TVA et Total TTC
+    tva = commande.total * Decimal('0.18')
+    total_ttc = commande.total + tva
     
-    # Styles personnalisés
-    styles = getSampleStyleSheet()
+    # Calculer quantité totale
+    total_quantity = sum(ligne.quantite for ligne in lignes_commande)
     
-    # En-tête entreprise style DIMAT MEDICAL
-    company_style = ParagraphStyle(
-        'CompanyStyle',
-        parent=styles['Normal'],
-        fontSize=16,
-        fontName='Helvetica-Bold',
-        alignment=TA_LEFT,
-        spaceAfter=5
-    )
+    # Informations entreprise
+    company_info = {
+        'company_address': 'Dakar, Sénégal',
+        'company_phone': '+221 XX XXX XX XX',
+        'company_email': 'contact@dimatmedical.sn',
+    }
     
-    subtitle_style = ParagraphStyle(
-        'SubtitleStyle',
-        parent=styles['Normal'],
-        fontSize=10,
-        alignment=TA_LEFT,
-        spaceAfter=10
-    )
+    # Préparer le contexte
+    context = {
+        'commande': commande,
+        'lignes_commande': lignes_commande,
+        'tva': tva,
+        'total_ttc': total_ttc,
+        'total_quantity': total_quantity,
+        'now': datetime.now(),
+        **company_info
+    }
     
-    title_style = ParagraphStyle(
-        'TitleStyle',
-        parent=styles['Heading1'],
-        fontSize=20,
-        fontName='Helvetica-Bold',
-        alignment=TA_CENTER,
-        spaceAfter=20
-    )
+    # Rendre le template HTML
+    html_string = render_to_string('inventory/bon_commande_pdf.html', context)
     
-    # En-tête avec logo et infos entreprise
-    header_data = [
-        [Paragraph("DIMAT MEDICAL", company_style), "", Paragraph("CODE CLIENT:", styles['Normal']), ""],
-        [Paragraph("CHIRURGIE GENERALE - RADIOLOGIE - IMAGERIE MÉDICALE", subtitle_style), "", "", ""],
-        [Paragraph(f"Tél: {COMPANY_INFO['phone']} Fax: {COMPANY_INFO['fax']}", styles['Normal']), "", Paragraph("DIVERS CLIENT", styles['Normal']), ""],
-        [Paragraph(f"Email: {COMPANY_INFO['email']}", styles['Normal']), "", "", ""]
-    ]
+    # Générer le PDF avec WeasyPrint
+    html = HTML(string=html_string, base_url=request.build_absolute_uri())
+    pdf_file = html.write_pdf()
     
-    header_table = Table(header_data, colWidths=[3*inch, 1*inch, 1.5*inch, 1.5*inch])
-    header_table.setStyle(TableStyle([
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('BOX', (2, 0), (3, 2), 1, colors.black),
-        ('GRID', (2, 0), (3, 2), 0.5, colors.black),
-    ]))
+    # Créer la réponse HTTP
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Bon_Commande_{commande.numero_commande}.pdf"'
     
-    story.append(header_table)
-    story.append(Spacer(1, 20))
-    
-    # Titre du document
-    story.append(Paragraph("BON DE COMMANDE", title_style))
-    story.append(Spacer(1, 15))
-    
-    # Informations de la commande
-    info_data = [
-        ["NUMERO", "DATE", "REFERENCE", "CLIENT SUIVI PAR:", "AFFAIRE/OBJECTIF"],
-        [commande.numero_commande, 
-         commande.date_commande.strftime('%d/%m/%y'), 
-         commande.numero_commande,
-         commande.utilisateur.get_full_name() or commande.utilisateur.username,
-         ""]
-    ]
-    
-    info_table = Table(info_data, colWidths=[1.5*inch, 1.5*inch, 1.5*inch, 1.8*inch, 1.7*inch])
-    info_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f0f0f0')),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
-    ]))
-    
-    story.append(info_table)
-    story.append(Spacer(1, 15))
-    
-    # Tableau des produits détaillé selon le modèle
-    if lignes:
-        # En-tête du tableau
-        data = [['Référence', 'Désignation', 'Qte', 'PU HT', 'PU TTC', 'Remise', 'Montant TTC']]
-        
-        total_ht = Decimal('0.00')
-        total_ttc = Decimal('0.00')
-        
-        # Lignes de produits
-        for ligne in lignes:
-            # Calculs (assumons 20% TVA)
-            taux_tva = Decimal('0.20')
-            prix_ht = ligne.prix_unitaire / (1 + taux_tva)
-            montant_ttc = ligne.prix_unitaire * ligne.quantite
-            
-            total_ht += prix_ht * ligne.quantite
-            total_ttc += montant_ttc
-            
-            data.append([
-                ligne.produit.reference or 'N/A',
-                ligne.produit.nom[:40] + '...' if len(ligne.produit.nom) > 40 else ligne.produit.nom,
-                str(ligne.quantite),
-                f"{prix_ht:.0f}",
-                f"{ligne.prix_unitaire:.0f}",
-                "0",  # Pas de remise par défaut
-                f"{montant_ttc:.0f}"
-            ])
-        
-        # Créer le tableau principal
-        main_table = Table(data, colWidths=[1*inch, 2.5*inch, 0.7*inch, 0.8*inch, 0.8*inch, 0.8*inch, 1*inch])
-        main_table.setStyle(TableStyle([
-            # En-tête
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f0f0f0')),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
-            ('TOPPADDING', (0, 0), (-1, 0), 8),
-            
-            # Corps du tableau
-            ('FONTSIZE', (0, 1), (-1, -1), 9),
-            ('ALIGN', (0, 1), (1, -1), 'LEFT'),  # Référence et désignation à gauche
-            ('ALIGN', (2, 1), (-1, -1), 'CENTER'),  # Autres colonnes centrées
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
-            ('TOPPADDING', (0, 1), (-1, -1), 6),
-        ]))
-        
-        story.append(main_table)
-        story.append(Spacer(1, 15))
-        
-        # Section des totaux avec base TVA
-        totals_data = [
-            ["Code", "Base", "Taux", "Montant", "", "Total HT", "Total TTC", "NET A PAYER"],
-            ["", "0", "", "0", "", f"{total_ht:.0f}", f"{total_ttc:.0f}", f"{total_ttc:.0f}"],
-            ["Total", "0", "", "0", "Arrêté la présente facture à la somme de :", "", "", ""],
-            ["", "", "", "Cent trois mille cinq cents", "", "", "", ""]
-        ]
-        
-        totals_table = Table(totals_data, colWidths=[0.8*inch, 0.8*inch, 0.8*inch, 0.8*inch, 2*inch, 1*inch, 1*inch, 1.2*inch])
-        totals_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f0f0f0')),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 9),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('GRID', (0, 0), (-1, 2), 1, colors.black),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-            ('TOPPADDING', (0, 0), (-1, -1), 6),
-            # Ligne des totaux en gras
-            ('FONTNAME', (5, 1), (-1, 1), 'Helvetica-Bold'),
-            ('BACKGROUND', (5, 1), (-1, 1), colors.HexColor('#e0e0e0')),
-        ]))
-        
-        story.append(totals_table)
-        story.append(Spacer(1, 15))
-        
-        # Section conditions de règlement
-        payment_data = [
-            ["CONDITIONS DE REGLEMENT"],
-            ["MODE", "Espèces"],
-            ["ECHEANCE", commande.date_commande.strftime('%d/%m/%y')]
-        ]
-        
-        payment_table = Table(payment_data, colWidths=[1.5*inch, 2*inch])
-        payment_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f0f0f0')),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-            ('TOPPADDING', (0, 0), (-1, -1), 8),
-        ]))
-        
-        story.append(payment_table)
-    
-    # Conditions générales en bas
-    story.append(Spacer(1, 30))
-    conditions_text = """Conditions de ventes - La marchandise est sous la responsabilité du client dès la signature et le cachet du bon de livraison. Toutes les réclamations formulées après cette déchargé ne seront pas prises en compte. Conformément à l'article 314 de l'Acte Uniforme du Droit Commercial Général, le transfert de propriété de la marchandise ne s'effectue qu'au jour du paiement complet et de toutes satisfaction et notre propriété."""
-    
-    story.append(Paragraph(conditions_text, ParagraphStyle(
-        'Conditions',
-        parent=styles['Normal'],
-        fontSize=8,
-        alignment=TA_JUSTIFY
-    )))
-    
-    # Construire le PDF
-    doc.build(story)
-    
-    # Retourner la réponse
-    buffer.seek(0)
-    response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="bon_commande_{commande.numero_commande}.pdf"'
     return response
 
 @login_required
@@ -1695,16 +1608,19 @@ def commande_update(request, pk):
     else:
         form = CommandeForm(instance=commande)
 
+    # Récupérer les lignes existantes avec les produits
+    lignes_existantes = LigneCommande.objects.filter(commande=commande).select_related('produit')
+    
     context = {
         'form': form,
         'commande': commande,
-        'lignes_existantes': list(commande.lignecommande_set.all()),  # Pour pré-remplir le formulaire
+        'lignes_existantes': lignes_existantes,  # Pour pré-remplir le formulaire
         'title': f'Modifier la commande {commande.numero_commande}',
-        'produits': Produit.objects.filter(actif=True),
-        'clients': Client.objects.filter(actif=True)
+        'produits': Produit.objects.filter(actif=True).order_by('nom'),
+        'clients': Client.objects.filter(actif=True).order_by('nom', 'prenom')
     }
     
-    return render(request, 'inventory/commande_create_advanced.html', context)
+    return render(request, 'inventory/commande_form.html', context)
 
 
 @login_required
@@ -2986,7 +2902,7 @@ def commande_create_advanced(request):
         'clients': Client.objects.filter(actif=True)
     }
     
-    return render(request, 'inventory/commande_create_advanced.html', context)
+    return render(request, 'inventory/commande_form.html', context)
 
 
 @login_required

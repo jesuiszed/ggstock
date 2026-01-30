@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bon de Livraison {{ commande.numero_commande }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm 1.5cm;
+            @bottom-right {
+                content: "Page " counter(page) " sur " counter(pages);
+                font-size: 9pt;
+                color: #666;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica', Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            font-size: 11pt;
+        }
+        
+        /* En-tête */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #f59e0b;
+        }
+        
+        .logo-section {
+            flex: 1;
+        }
+        
+        .company-name {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #d97706;
+            margin-bottom: 8px;
+        }
+        
+        .company-info {
+            font-size: 9pt;
+            line-height: 1.5;
+            color: #555;
+        }
+        
+        .doc-title {
+            text-align: right;
+            flex: 0 0 auto;
+        }
+        
+        .doc-title h1 {
+            font-size: 28pt;
+            color: #d97706;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .doc-number {
+            font-size: 14pt;
+            color: #666;
+            font-weight: normal;
+        }
+        
+        /* Informations */
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 30px;
+        }
+        
+        .info-box {
+            flex: 1;
+            background: #fffbeb;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .info-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #d97706;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .info-content {
+            font-size: 10pt;
+            line-height: 1.8;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 140px;
+        }
+        
+        /* Adresse de livraison */
+        .delivery-address {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .delivery-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+        
+        .delivery-content {
+            font-size: 10pt;
+            line-height: 1.8;
+            color: #78350f;
+        }
+        
+        /* Tableau produits */
+        .products-section {
+            margin: 30px 0;
+        }
+        
+        .products-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #d97706;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        thead {
+            background: #d97706;
+            color: white;
+        }
+        
+        th {
+            padding: 12px 8px;
+            text-align: left;
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        th.center, td.center {
+            text-align: center;
+        }
+        
+        th.right, td.right {
+            text-align: right;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        td {
+            padding: 10px 8px;
+            font-size: 10pt;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .product-ref {
+            font-size: 9pt;
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        /* Colonne état */
+        .state-checkbox {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #6b7280;
+            border-radius: 3px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        /* Résumé */
+        .summary-section {
+            margin-top: 30px;
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .summary-title {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #075985;
+            margin-bottom: 10px;
+        }
+        
+        .summary-content {
+            font-size: 10pt;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-weight: bold;
+            color: #0369a1;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .summary-value {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #075985;
+        }
+        
+        /* Instructions de livraison */
+        .delivery-instructions {
+            margin-top: 25px;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 4px;
+            page-break-inside: avoid;
+        }
+        
+        .instructions-title {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #334155;
+            margin-bottom: 10px;
+        }
+        
+        .instructions-content {
+            font-size: 9pt;
+            line-height: 1.8;
+            color: #475569;
+        }
+        
+        .instruction-item {
+            margin-bottom: 6px;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .instruction-item:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #64748b;
+            font-weight: bold;
+        }
+        
+        /* Section émargement */
+        .emargement-section {
+            margin-top: 40px;
+            page-break-inside: avoid;
+        }
+        
+        .emargement-notice {
+            background: #fef3c7;
+            border: 2px dashed #f59e0b;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 10pt;
+            font-weight: bold;
+            color: #92400e;
+        }
+        
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        
+        .signature-box {
+            flex: 1;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 140px;
+            background: white;
+        }
+        
+        .signature-title {
+            font-weight: bold;
+            font-size: 11pt;
+            color: #d97706;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        
+        .signature-fields {
+            font-size: 9pt;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+        
+        .signature-field {
+            margin-bottom: 8px;
+            display: flex;
+        }
+        
+        .field-label {
+            font-weight: bold;
+            width: 80px;
+        }
+        
+        .field-value {
+            flex: 1;
+            border-bottom: 1px solid #d1d5db;
+            min-height: 20px;
+        }
+        
+        .signature-area {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 10px;
+            border-top: 2px solid #333;
+        }
+        
+        .signature-label {
+            font-size: 9pt;
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* Notes */
+        .notes-section {
+            margin-top: 20px;
+            page-break-inside: avoid;
+        }
+        
+        .notes-content {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 9pt;
+            font-style: italic;
+            color: #475569;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #d1d5db;
+            text-align: center;
+            font-size: 8pt;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <!-- EN-TÊTE -->
+    <div class="header">
+        <div class="logo-section">
+            <div class="company-name">DIMAT MEDICAL</div>
+            <div class="company-info">
+                <strong>Zybio Business Manager - Sénégal</strong><br>
+                Adresse : {{ company_address|default:"Dakar, Sénégal" }}<br>
+                Tél : {{ company_phone|default:"+221 XX XXX XX XX" }}<br>
+                Email : {{ company_email|default:"contact@dimatmedical.sn" }}
+            </div>
+        </div>
+        
+        <div class="doc-title">
+            <h1>BON DE LIVRAISON</h1>
+            <div class="doc-number">N° {{ commande.numero_commande }}</div>
+        </div>
+    </div>
+    
+    <!-- INFORMATIONS -->
+    <div class="info-section">
+        <div class="info-box">
+            <div class="info-title">📦 Informations Client</div>
+            <div class="info-content">
+                <div><span class="info-label">Client :</span> {{ commande.client.nom_complet }}</div>
+                {% if commande.client.entreprise %}
+                <div><span class="info-label">Entreprise :</span> {{ commande.client.entreprise }}</div>
+                {% endif %}
+                <div><span class="info-label">Téléphone :</span> {{ commande.client.telephone }}</div>
+                <div><span class="info-label">Email :</span> {{ commande.client.email }}</div>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <div class="info-title">📅 Détails Livraison</div>
+            <div class="info-content">
+                <div><span class="info-label">Date livraison :</span> {{ delivery_date|date:"d/m/Y"|default:"__/__/____" }}</div>
+                <div><span class="info-label">Heure :</span> {{ delivery_time|default:"__:__" }}</div>
+                <div><span class="info-label">Commande N° :</span> {{ commande.numero_commande }}</div>
+                <div><span class="info-label">Livreur :</span> _________________________</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ADRESSE DE LIVRAISON -->
+    <div class="delivery-address">
+        <div class="delivery-title">🚚 Adresse de Livraison</div>
+        <div class="delivery-content">
+            {{ commande.adresse_livraison }}
+        </div>
+    </div>
+    
+    <!-- TABLEAU DES PRODUITS -->
+    <div class="products-section">
+        <div class="products-title">Articles Livrés</div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 6%;">N°</th>
+                    <th style="width: 14%;">Référence</th>
+                    <th style="width: 38%;">Désignation</th>
+                    <th class="center" style="width: 12%;">Qté Commandée</th>
+                    <th class="center" style="width: 12%;">Qté Livrée</th>
+                    <th class="center" style="width: 18%;">État / Conforme</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in lignes_commande %}
+                <tr>
+                    <td class="center">{{ forloop.counter }}</td>
+                    <td>
+                        <span class="product-ref">{{ ligne.produit.reference }}</span>
+                    </td>
+                    <td class="product-name">{{ ligne.produit.nom }}</td>
+                    <td class="center" style="font-weight: 600;">{{ ligne.quantite }}</td>
+                    <td class="center">
+                        <span style="border-bottom: 1px solid #999; display: inline-block; min-width: 40px; text-align: center;">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </span>
+                    </td>
+                    <td class="center">
+                        <span class="state-checkbox"></span> Oui
+                        <span class="state-checkbox" style="margin-left: 15px;"></span> Non
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- RÉSUMÉ -->
+    <div class="summary-section">
+        <div class="summary-title">📊 Résumé de la Livraison</div>
+        <div class="summary-content">
+            <div class="summary-item">
+                <span class="summary-label">Nombre d'articles différents</span>
+                <span class="summary-value">{{ lignes_commande|length }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Quantité totale commandée</span>
+                <span class="summary-value">{{ total_quantity }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Nombre de colis</span>
+                <span class="summary-value">____</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- INSTRUCTIONS -->
+    <div class="delivery-instructions">
+        <div class="instructions-title">📋 Instructions et Remarques</div>
+        <div class="instructions-content">
+            <div class="instruction-item">
+                Vérifier l'intégrité des emballages avant signature
+            </div>
+            <div class="instruction-item">
+                Compter les articles livrés et confirmer les quantités dans la colonne "Qté Livrée"
+            </div>
+            <div class="instruction-item">
+                Cocher la case "Oui" ou "Non" dans la colonne "État / Conforme" pour chaque article
+            </div>
+            <div class="instruction-item">
+                En cas d'anomalie, refus ou réserve, les noter précisément au dos de ce document
+            </div>
+            <div class="instruction-item">
+                Signature obligatoire pour valider la réception de la livraison
+            </div>
+        </div>
+    </div>
+    
+    <!-- NOTES -->
+    {% if commande.notes %}
+    <div class="notes-section">
+        <div class="instructions-title">💬 Notes Particulières</div>
+        <div class="notes-content">
+            {{ commande.notes }}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- ÉMARGEMENT -->
+    <div class="emargement-section">
+        <div class="emargement-notice">
+            ⚠️ ATTENTION : Ce bon de livraison doit être signé pour confirmer la réception des marchandises
+        </div>
+        
+        <div class="signatures">
+            <!-- Livreur -->
+            <div class="signature-box">
+                <div class="signature-title">Le Livreur</div>
+                <div class="signature-fields">
+                    <div class="signature-field">
+                        <span class="field-label">Nom :</span>
+                        <span class="field-value"></span>
+                    </div>
+                    <div class="signature-field">
+                        <span class="field-label">Date :</span>
+                        <span class="field-value"></span>
+                    </div>
+                    <div class="signature-field">
+                        <span class="field-label">Heure :</span>
+                        <span class="field-value"></span>
+                    </div>
+                </div>
+                <div class="signature-area">
+                    <span class="signature-label">Signature et Cachet</span>
+                </div>
+            </div>
+            
+            <!-- Destinataire -->
+            <div class="signature-box">
+                <div class="signature-title">Le Destinataire</div>
+                <div class="signature-fields">
+                    <div class="signature-field">
+                        <span class="field-label">Nom :</span>
+                        <span class="field-value"></span>
+                    </div>
+                    <div class="signature-field">
+                        <span class="field-label">Date :</span>
+                        <span class="field-value"></span>
+                    </div>
+                    <div class="signature-field">
+                        <span class="field-label">Heure :</span>
+                        <span class="field-value"></span>
+                    </div>
+                </div>
+                <div class="signature-area">
+                    <span class="signature-label">Signature "Bon pour réception"</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FOOTER -->
+    <div class="footer">
+        Document généré le {{ now|date:"d/m/Y à H:i" }} - DIMAT MEDICAL / Zybio Business Manager Sénégal<br>
+        Bon de Livraison N° {{ commande.numero_commande }} - Original à conserver
+    </div>
+</body>
+</html>

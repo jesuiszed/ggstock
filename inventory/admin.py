@@ -3,7 +3,8 @@ from .models import (
     Categorie, Fournisseur, Produit, MouvementStock, 
     Client, Commande, LigneCommande, Vente, LigneVente,
     Devis, LigneDevis, Prospect, NoteObservation, 
-    AppareilVendu, InterventionSAV, TransfertStock
+    AppareilVendu, InterventionSAV, TransfertStock,
+    ProspectionTelephonique
 )
 
 
@@ -307,6 +308,47 @@ class TransfertStockAdmin(admin.ModelAdmin):
             'fields': ('demandeur', 'expediteur', 'recepteur', 'date_creation', 'date_expedition', 'date_reception')
         }),
     )
+
+
+@admin.register(ProspectionTelephonique)
+class ProspectionTelephoniqueAdmin(admin.ModelAdmin):
+    list_display = [
+        'nom_complet', 'numero_telephone', 'type_appel', 'statut', 
+        'date_rdv', 'commercial', 'date_creation'
+    ]
+    list_filter = ['statut', 'type_appel', 'source_prospect', 'commercial', 'date_creation']
+    search_fields = ['nom_complet', 'numero_telephone', 'email', 'description']
+    readonly_fields = ['date_creation', 'date_modification']
+    list_editable = ['statut']
+    date_hierarchy = 'date_creation'
+    
+    fieldsets = (
+        ('Informations de Contact', {
+            'fields': ('nom_complet', 'numero_telephone', 'email')
+        }),
+        ('Type d\'Appel', {
+            'fields': ('type_appel', 'source_prospect')
+        }),
+        ('Suivi Commercial', {
+            'fields': ('statut', 'date_rdv', 'description', 'commercial')
+        }),
+        ('Métadonnées', {
+            'fields': ('date_creation', 'date_modification'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        # Filtrer par commercial si l'utilisateur n'est pas admin
+        return qs.filter(commercial=request.user)
+    
+    def save_model(self, request, obj, form, change):
+        if not change:  # Si création
+            obj.commercial = request.user
+        super().save_model(request, obj, form, change)
 
 
 # Configuration générale de l'admin

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Supprimer Prospection{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <!-- En-tête -->
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-trash text-red-600 mr-3"></i>
+                Supprimer une Prospection
+            </h1>
+            <a href="{% url 'inventory:prospection_detail' prospection.pk %}" 
+               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Retour
+            </a>
+        </div>
+
+        <!-- Confirmation -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <!-- Avertissement -->
+            <div class="bg-red-50 border-l-4 border-red-400 p-6 mb-6">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-red-400 text-3xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-red-800 mb-2">
+                            Attention : Cette action est irréversible !
+                        </h3>
+                        <p class="text-sm text-red-700">
+                            Vous êtes sur le point de supprimer définitivement cette fiche de prospection. 
+                            Toutes les informations associées seront perdues.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Récapitulatif -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-6 border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-info-circle mr-2"></i>Informations de la prospection
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center">
+                        <i class="fas fa-user text-blue-500 w-6 mr-3"></i>
+                        <span class="text-gray-700"><strong>Nom:</strong> {{ prospection.nom_complet }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-phone text-green-500 w-6 mr-3"></i>
+                        <span class="text-gray-700"><strong>Téléphone:</strong> {{ prospection.numero_telephone }}</span>
+                    </div>
+                    {% if prospection.email %}
+                    <div class="flex items-center">
+                        <i class="fas fa-envelope text-purple-500 w-6 mr-3"></i>
+                        <span class="text-gray-700"><strong>Email:</strong> {{ prospection.email }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="flex items-center">
+                        <i class="fas fa-phone-square-alt text-indigo-500 w-6 mr-3"></i>
+                        <span class="text-gray-700"><strong>Type:</strong> {{ prospection.get_type_appel_display }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-flag text-orange-500 w-6 mr-3"></i>
+                        <span class="text-gray-700"><strong>Statut:</strong> {{ prospection.get_statut_display }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-user-tie text-blue-500 w-6 mr-3"></i>
+                        <span class="text-gray-700"><strong>Commercial:</strong> {{ prospection.commercial.first_name }} {{ prospection.commercial.last_name }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question de confirmation -->
+            <p class="text-lg text-center text-gray-700 font-medium mb-6">
+                Êtes-vous certain de vouloir supprimer cette prospection ?
+            </p>
+
+            <!-- Formulaire de suppression -->
+            <form method="post">
+                {% csrf_token %}
+                <div class="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                    <a href="{% url 'inventory:prospection_detail' prospection.pk %}" 
+                       class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 px-8 py-3 rounded-lg transition duration-200 text-center font-medium">
+                        <i class="fas fa-times mr-2"></i>Annuler
+                    </a>
+                    <button type="submit" 
+                            class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg transition duration-200 font-medium">
+                        <i class="fas fa-trash mr-2"></i>Oui, supprimer définitivement
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

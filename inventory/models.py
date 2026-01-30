@@ -513,3 +513,76 @@ class TransfertStock(models.Model):
                 numero = 1
             self.numero_transfert = f'TRA{année}{numero:04d}'
         super().save(*args, **kwargs)
+
+
+class ProspectionTelephonique(models.Model):
+    """Modèle pour la gestion de la prospection téléphonique"""
+    TYPE_APPEL_CHOICES = [
+        ('SORTANT', 'Appel sortant'),
+        ('ENTRANT', 'Appel entrant'),
+    ]
+    
+    STATUT_CHOICES = [
+        ('RDV', 'RDV'),
+        ('BV', 'BV'),
+        ('CLIENT_ACQUIS', 'Client acquis'),
+        ('A_RELANCER', 'À relancer'),
+    ]
+    
+    SOURCE_PROSPECT_CHOICES = [
+        ('CONTACT_EMAIL', 'Contact email'),
+        ('APPEL_DIRECT', 'Appel direct'),
+        ('SITE_WEB', 'Site web'),
+        ('RESEAUX_SOCIAUX', 'Réseaux sociaux'),
+        ('FLYER', 'Flyer'),
+        ('VISIOCONFERENCE', 'Visioconférence'),
+        ('BOUCHE_OREILLE', 'Bouche à oreille'),
+    ]
+    
+    # Champs communs
+    nom_complet = models.CharField(max_length=200, verbose_name="Nom complet")
+    numero_telephone = models.CharField(max_length=20, verbose_name="Numéro téléphonique")
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='A_RELANCER', verbose_name="Statut")
+    date_rdv = models.DateField(blank=True, null=True, verbose_name="Date de RDV")
+    description = models.TextField(verbose_name="Description")
+    type_appel = models.CharField(max_length=20, choices=TYPE_APPEL_CHOICES, verbose_name="Type d'appel")
+    
+    # Champ spécifique appel sortant
+    email = models.EmailField(blank=True, null=True, verbose_name="Email")
+    
+    # Champ spécifique appel entrant
+    source_prospect = models.CharField(
+        max_length=50, 
+        choices=SOURCE_PROSPECT_CHOICES, 
+        blank=True, 
+        null=True, 
+        verbose_name="Source de prospect"
+    )
+    
+    # Métadonnées
+    commercial = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Commercial")
+    date_creation = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
+    date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
+    
+    class Meta:
+        verbose_name = "Prospection Téléphonique"
+        verbose_name_plural = "Prospections Téléphoniques"
+        ordering = ['-date_creation']
+    
+    def __str__(self):
+        return f"{self.nom_complet} - {self.get_statut_display()} ({self.get_type_appel_display()})"
+    
+    def get_couleur_statut(self):
+        """Retourne la couleur CSS selon le statut"""
+        couleurs = {
+            'RDV': 'bg-yellow-100 text-yellow-800 border-yellow-300',
+            'BV': 'bg-red-100 text-red-800 border-red-300',
+            'CLIENT_ACQUIS': 'bg-green-100 text-green-800 border-green-300',
+            'A_RELANCER': 'bg-gray-100 text-gray-800 border-gray-300',
+        }
+        return couleurs.get(self.statut, 'bg-gray-100 text-gray-800 border-gray-300')
+    
+    def get_badge_statut(self):
+        """Retourne le badge HTML complet pour le statut"""
+        couleur = self.get_couleur_statut()
+        return f'<span class="px-2 py-1 rounded-full text-xs font-semibold {couleur}">{self.get_statut_display()}</span>'

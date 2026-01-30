@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from datetime import date
 from .models import (
     Produit, Client, Commande, Vente, MouvementStock, 
-    Fournisseur, Categorie, LigneCommande, LigneVente
+    Fournisseur, Categorie, LigneCommande, LigneVente,
+    ProspectionTelephonique
 )
 
 
@@ -392,3 +393,82 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class ProspectionTelephoniqueForm(forms.ModelForm):
+    """Formulaire pour la prospection téléphonique"""
+    class Meta:
+        model = ProspectionTelephonique
+        fields = [
+            'nom_complet', 'numero_telephone', 'statut', 'date_rdv', 
+            'description', 'type_appel', 'email', 'source_prospect'
+        ]
+        widgets = {
+            'nom_complet': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'placeholder': 'Ex: Jean Dupont'
+            }),
+            'numero_telephone': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'placeholder': 'Ex: +221 77 123 45 67'
+            }),
+            'statut': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+            }),
+            'date_rdv': forms.DateInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'type': 'date'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'rows': 4,
+                'placeholder': 'Détails de la conversation, besoins identifiés, remarques...'
+            }),
+            'type_appel': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'id': 'id_type_appel'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'placeholder': 'exemple@email.com',
+                'id': 'id_email'
+            }),
+            'source_prospect': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'id': 'id_source_prospect'
+            }),
+        }
+        labels = {
+            'nom_complet': 'Nom complet',
+            'numero_telephone': 'Numéro téléphonique',
+            'statut': 'Statut',
+            'date_rdv': 'Date de RDV (facultatif)',
+            'description': 'Description',
+            'type_appel': "Type d'appel",
+            'email': 'Email (pour appel sortant uniquement)',
+            'source_prospect': 'Source de prospect (pour appel entrant uniquement)',
+        }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        type_appel = cleaned_data.get('type_appel')
+        email = cleaned_data.get('email')
+        source_prospect = cleaned_data.get('source_prospect')
+        
+        # Validation: Email obligatoire pour appel sortant
+        if type_appel == 'SORTANT' and not email:
+            self.add_error('email', 'L\'email est obligatoire pour un appel sortant.')
+        
+        # Validation: Source obligatoire pour appel entrant
+        if type_appel == 'ENTRANT' and not source_prospect:
+            self.add_error('source_prospect', 'La source de prospect est obligatoire pour un appel entrant.')
+        
+        # Nettoyage: Vider email si appel entrant
+        if type_appel == 'ENTRANT':
+            cleaned_data['email'] = None
+        
+        # Nettoyage: Vider source si appel sortant
+        if type_appel == 'SORTANT':
+            cleaned_data['source_prospect'] = None
+        
+        return cleaned_data

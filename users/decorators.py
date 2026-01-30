@@ -23,6 +23,10 @@ def role_required(allowed_roles):
         @wraps(view_func)
         @login_required
         def _wrapped_view(request, *args, **kwargs):
+            # Les superusers ont toujours accès
+            if request.user.is_superuser:
+                return view_func(request, *args, **kwargs)
+            
             if not hasattr(request.user, 'profile'):
                 messages.error(request, "Aucun profil trouvé pour cet utilisateur.")
                 return redirect('users:login')

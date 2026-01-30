@@ -1,0 +1,667 @@
+<!-- Styles CSS communs pour tous les documents PDF -->
+<style>
+    @page {
+        size: A4;
+        margin: 2cm 1.5cm;
+        @bottom-right {
+            content: "Page " counter(page) " sur " counter(pages);
+            font-size: 9pt;
+            color: #666;
+        }
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Helvetica', Arial, sans-serif;
+        color: #333;
+        line-height: 1.6;
+        font-size: 11pt;
+        position: relative;
+    }
+    
+    /* Filigrane en arrière-plan */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        width: 600px;
+        height: 600px;
+        background-image: url('/static/images/logo.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.05;
+        z-index: -1;
+    }
+    
+    /* En-tête avec logo */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid var(--primary-color, #2563eb);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .logo-section {
+        flex: 1;
+    }
+    
+    .logo {
+        max-width: 180px;
+        max-height: 80px;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .company-name {
+        font-size: 16pt;
+        font-weight: bold;
+        color: var(--primary-color, #1e40af);
+        margin-bottom: 8px;
+    }
+    
+    .company-info {
+        font-size: 9pt;
+        line-height: 1.8;
+        color: #555;
+    }
+    
+    /* Titre du document */
+    .doc-title {
+        text-align: right;
+        flex: 0 0 auto;
+    }
+    
+    .doc-title h1 {
+        font-size: 28pt;
+        color: var(--primary-color, #1e40af);
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .doc-number {
+        font-size: 14pt;
+        color: #666;
+        font-weight: normal;
+    }
+    
+    /* Section d'informations */
+    .info-section {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        gap: 30px;
+    }
+    
+    .info-box {
+        flex: 1;
+        background: var(--light-bg, #f8fafc);
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-color, #2563eb);
+    }
+    
+    .info-title {
+        font-size: 12pt;
+        font-weight: bold;
+        color: var(--primary-color, #1e40af);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+    
+    .info-content {
+        font-size: 10pt;
+        line-height: 1.8;
+    }
+    
+    .info-label {
+        font-weight: bold;
+        color: #555;
+        display: inline-block;
+        width: 120px;
+    }
+    
+    /* Tableau des produits */
+    .products-section {
+        margin: 30px 0;
+    }
+    
+    .section-title {
+        font-size: 14pt;
+        font-weight: bold;
+        color: var(--primary-color, #1e40af);
+        margin-bottom: 15px;
+        text-transform: uppercase;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    
+    thead {
+        background: var(--primary-color, #1e40af);
+        color: white;
+    }
+    
+    th {
+        padding: 12px 8px;
+        text-align: left;
+        font-size: 10pt;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    
+    th.center, td.center {
+        text-align: center;
+    }
+    
+    th.right, td.right {
+        text-align: right;
+    }
+    
+    tbody tr {
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    tbody tr:nth-child(even) {
+        background: #f9fafb;
+    }
+    
+    td {
+        padding: 10px 8px;
+        font-size: 10pt;
+    }
+    
+    .product-name {
+        font-weight: 600;
+        color: #1f2937;
+    }
+    
+    /* Totaux */
+    .totals-section {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .totals-box {
+        width: 350px;
+        background: var(--light-bg, #f8fafc);
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 15px;
+    }
+    
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 11pt;
+    }
+    
+    .total-row.subtotal {
+        border-bottom: 1px solid #d1d5db;
+    }
+    
+    .total-row.final {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 2px solid var(--primary-color, #1e40af);
+        font-size: 14pt;
+        font-weight: bold;
+        color: var(--primary-color, #1e40af);
+    }
+    
+    .total-label {
+        font-weight: 600;
+    }
+    
+    .total-value {
+        font-weight: bold;
+    }
+    
+    /* Conditions et notes */
+    .conditions-section, .notes-section {
+        margin-top: 30px;
+        page-break-inside: avoid;
+    }
+    
+    .conditions-box {
+        background: #fffbeb;
+        border-left: 4px solid #f59e0b;
+        padding: 15px;
+        border-radius: 4px;
+        font-size: 9pt;
+        line-height: 1.8;
+    }
+    
+    .condition-item {
+        margin-bottom: 8px;
+        padding-left: 15px;
+        position: relative;
+    }
+    
+    .condition-item:before {
+        content: "▪";
+        position: absolute;
+        left: 0;
+        color: #f59e0b;
+        font-weight: bold;
+    }
+    
+    .notes-content {
+        background: #f1f5f9;
+        padding: 12px;
+        border-radius: 4px;
+        font-size: 9pt;
+        font-style: italic;
+        color: #475569;
+    }
+    
+    /* Section signature */
+    .signature-section {
+        margin-top: 40px;
+        page-break-inside: avoid;
+    }
+    
+    .lu-approuve {
+        text-align: center;
+        font-size: 10pt;
+        font-style: italic;
+        color: #666;
+        margin-bottom: 30px;
+        padding: 10px;
+        background: #fef3c7;
+        border: 1px dashed #f59e0b;
+        border-radius: 4px;
+    }
+    
+    .signatures {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+    }
+    
+    .signature-box {
+        width: 45%;
+        text-align: center;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 20px;
+        min-height: 120px;
+        background: white;
+    }
+    
+    .signature-title {
+        font-weight: bold;
+        font-size: 11pt;
+        color: var(--primary-color, #1e40af);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+    
+    .signature-line {
+        margin-top: 60px;
+        border-top: 2px solid #333;
+        padding-top: 5px;
+        font-size: 9pt;
+        color: #666;
+    }
+    
+    /* Footer */
+    .footer {
+        margin-top: 40px;
+        padding-top: 15px;
+        border-top: 1px solid #d1d5db;
+        text-align: center;
+        font-size: 8pt;
+        color: #9ca3af;
+    }
+    
+    /* Utilitaires */
+    .currency {
+        font-weight: 600;
+    }
+    
+    .text-muted {
+        color: #6b7280;
+    }
+    
+    .highlight {
+        background: #fef3c7;
+        padding: 2px 6px;
+        border-radius: 3px;
+    }
+    
+    /* Badges de statut */
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 9pt;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .status-brouillon { background: #fef3c7; color: #92400e; }
+    .status-envoye { background: #dbeafe; color: #1e40af; }
+    .status-accepte { background: #d1fae5; color: #065f46; }
+    .status-refuse { background: #fee2e2; color: #991b1b; }
+    .status-expire { background: #e5e7eb; color: #374151; }
+    .status-en_attente { background: #fef3c7; color: #92400e; }
+    .status-validee { background: #d1fae5; color: #065f46; }
+    .status-recue { background: #dbeafe; color: #1e40af; }
+    .status-livree { background: #d1fae5; color: #065f46; }
+    .status-annulee { background: #fee2e2; color: #991b1b; }
+    
+    /* ========================================
+       STYLES RESPONSIVE POUR PDF
+       ======================================== */
+    
+    /* Adaptation pour format Letter (US) */
+    @page letter {
+        size: letter;
+        margin: 2cm 1.5cm;
+    }
+    
+    /* Gestion des débordements de texte */
+    td, th {
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
+    
+    /* Tableaux responsive */
+    table {
+        table-layout: auto;
+        max-width: 100%;
+    }
+    
+    /* Colonnes de tableaux avec largeurs flexibles */
+    th, td {
+        min-width: 50px;
+        max-width: 100%;
+    }
+    
+    /* Ajustement automatique des colonnes numériques */
+    td.right, th.right {
+        white-space: nowrap;
+        min-width: 80px;
+    }
+    
+    td.center, th.center {
+        white-space: nowrap;
+        min-width: 60px;
+    }
+    
+    /* Nom de produit - peut s'étendre sur plusieurs lignes */
+    .product-name {
+        max-width: 250px;
+        word-wrap: break-word;
+    }
+    
+    /* Adaptation de la mise en page pour pages plus petites */
+    @media print and (max-width: 595px) {
+        body {
+            font-size: 10pt;
+        }
+        
+        .header {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .doc-title {
+            text-align: left;
+        }
+        
+        .doc-title h1 {
+            font-size: 22pt;
+        }
+        
+        .info-section {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .totals-box {
+            width: 100%;
+        }
+        
+        .signatures {
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .signature-box {
+            width: 100%;
+        }
+        
+        th, td {
+            padding: 8px 4px;
+            font-size: 9pt;
+        }
+        
+        .logo {
+            max-width: 120px;
+            max-height: 60px;
+        }
+        
+        .company-name {
+            font-size: 14pt;
+        }
+        
+        .company-info {
+            font-size: 8pt;
+        }
+    }
+    
+    /* Adaptation pour écrans (si visualisation HTML) */
+    @media screen and (max-width: 768px) {
+        body {
+            padding: 10px;
+            font-size: 10pt;
+        }
+        
+        .header {
+            flex-direction: column;
+            padding-bottom: 15px;
+        }
+        
+        .logo-section {
+            text-align: center;
+        }
+        
+        .doc-title {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .doc-title h1 {
+            font-size: 20pt;
+        }
+        
+        .doc-number {
+            font-size: 12pt;
+        }
+        
+        .info-section {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .info-box {
+            width: 100%;
+        }
+        
+        /* Rendre le tableau scrollable horizontalement sur mobile */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            min-width: 600px;
+        }
+        
+        th, td {
+            font-size: 9pt;
+            padding: 6px 4px;
+        }
+        
+        .totals-section {
+            justify-content: center;
+        }
+        
+        .totals-box {
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .signatures {
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .signature-box {
+            width: 100%;
+        }
+        
+        .logo {
+            max-width: 150px;
+            margin: 0 auto;
+        }
+        
+        .company-name {
+            font-size: 14pt;
+        }
+        
+        .company-info {
+            font-size: 8pt;
+            line-height: 1.6;
+        }
+        
+        body::before {
+            width: 300px;
+            height: 300px;
+        }
+    }
+    
+    /* Adaptation pour très petits écrans */
+    @media screen and (max-width: 480px) {
+        body {
+            font-size: 9pt;
+        }
+        
+        .doc-title h1 {
+            font-size: 18pt;
+        }
+        
+        .section-title {
+            font-size: 12pt;
+        }
+        
+        .info-title {
+            font-size: 10pt;
+        }
+        
+        th, td {
+            font-size: 8pt;
+            padding: 5px 3px;
+        }
+        
+        .total-row {
+            font-size: 9pt;
+        }
+        
+        .total-row.final {
+            font-size: 12pt;
+        }
+    }
+    
+    /* Optimisation pour l'impression */
+    @media print {
+        body::before {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+        
+        .header {
+            page-break-after: avoid;
+        }
+        
+        .info-section {
+            page-break-inside: avoid;
+        }
+        
+        .products-section {
+            page-break-before: auto;
+        }
+        
+        thead {
+            display: table-header-group;
+        }
+        
+        tbody tr {
+            page-break-inside: avoid;
+        }
+        
+        .totals-section {
+            page-break-inside: avoid;
+        }
+        
+        .signature-section {
+            page-break-before: auto;
+            page-break-inside: avoid;
+        }
+        
+        /* Forcer l'affichage des couleurs de fond à l'impression */
+        thead,
+        tbody tr:nth-child(even),
+        .info-box,
+        .conditions-box,
+        .status-badge {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+    }
+    
+    /* Gestion des sauts de page */
+    .page-break-before {
+        page-break-before: always;
+    }
+    
+    .page-break-after {
+        page-break-after: always;
+    }
+    
+    .no-page-break {
+        page-break-inside: avoid;
+    }
+    
+    /* Flexibilité des images */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* Conteneur responsive pour tableaux */
+    .table-responsive {
+        overflow-x: auto;
+        width: 100%;
+    }
+</style>

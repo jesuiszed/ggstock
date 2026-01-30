@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}Prospection Téléphonique{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête avec titre et bouton -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-phone-volume text-blue-600 mr-3"></i>
+                Prospection Téléphonique
+            </h1>
+            <p class="text-gray-600 mt-2">Gestion complète des appels entrants et sortants</p>
+        </div>
+        <a href="{% url 'inventory:prospection_create' %}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200 flex items-center shadow-lg">
+            <i class="fas fa-plus mr-2"></i>Nouvelle Prospection
+        </a>
+    </div>
+
+    <!-- Statistiques rapides -->
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Total</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ stats.total }}</p>
+                </div>
+                <i class="fas fa-list text-blue-500 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-yellow-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">RDV</p>
+                    <p class="text-2xl font-bold text-yellow-600">{{ stats.rdv }}</p>
+                </div>
+                <i class="fas fa-calendar-check text-yellow-500 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-red-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">BV</p>
+                    <p class="text-2xl font-bold text-red-600">{{ stats.bv }}</p>
+                </div>
+                <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Acquis</p>
+                    <p class="text-2xl font-bold text-green-600">{{ stats.client_acquis }}</p>
+                </div>
+                <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">À relancer</p>
+                    <p class="text-2xl font-bold text-gray-600">{{ stats.a_relancer }}</p>
+                </div>
+                <i class="fas fa-redo text-gray-500 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-purple-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Sortants</p>
+                    <p class="text-2xl font-bold text-purple-600">{{ stats.appel_sortant }}</p>
+                </div>
+                <i class="fas fa-phone-alt text-purple-500 text-2xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-indigo-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Entrants</p>
+                    <p class="text-2xl font-bold text-indigo-600">{{ stats.appel_entrant }}</p>
+                </div>
+                <i class="fas fa-phone text-indigo-500 text-2xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <form method="get" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <!-- Recherche -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-search mr-1"></i>Recherche
+                    </label>
+                    <input type="text" name="search" value="{{ search_query }}" 
+                           placeholder="Nom, téléphone, email..." 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                
+                <!-- Filtre Statut -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-filter mr-1"></i>Statut
+                    </label>
+                    <select name="statut" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Tous</option>
+                        {% for value, label in statut_choices %}
+                        <option value="{{ value }}" {% if statut_filter == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Filtre Type d'appel -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-phone-square mr-1"></i>Type d'appel
+                    </label>
+                    <select name="type_appel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Tous</option>
+                        {% for value, label in type_appel_choices %}
+                        <option value="{{ value }}" {% if type_appel_filter == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Tri -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-sort mr-1"></i>Trier par
+                    </label>
+                    <select name="sort" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="-date_creation" {% if sort_by == '-date_creation' %}selected{% endif %}>Plus récent</option>
+                        <option value="date_creation" {% if sort_by == 'date_creation' %}selected{% endif %}>Plus ancien</option>
+                        <option value="nom_complet" {% if sort_by == 'nom_complet' %}selected{% endif %}>Nom A-Z</option>
+                        <option value="-nom_complet" {% if sort_by == '-nom_complet' %}selected{% endif %}>Nom Z-A</option>
+                        <option value="statut" {% if sort_by == 'statut' %}selected{% endif %}>Statut</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex gap-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-200">
+                    <i class="fas fa-filter mr-2"></i>Filtrer
+                </button>
+                <a href="{% url 'inventory:prospection_list' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg transition duration-200">
+                    <i class="fas fa-redo mr-2"></i>Réinitialiser
+                </a>
+                <a href="{% url 'inventory:prospection_export_excel' %}?{{ request.GET.urlencode }}" 
+                   class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition duration-200 ml-auto">
+                    <i class="fas fa-file-excel mr-2"></i>Exporter Excel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tableau des prospections -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nom complet
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Téléphone
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Type
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Statut
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date RDV
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Commercial
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date création
+                        </th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for prospection in page_obj %}
+                    <tr class="hover:bg-gray-50 transition duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <i class="fas fa-user text-blue-600"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ prospection.nom_complet }}
+                                    </div>
+                                    {% if prospection.email %}
+                                    <div class="text-sm text-gray-500">
+                                        <i class="fas fa-envelope text-xs mr-1"></i>{{ prospection.email }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">
+                                <i class="fas fa-phone text-blue-500 mr-1"></i>
+                                {{ prospection.numero_telephone }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if prospection.type_appel == 'SORTANT' %}
+                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                <i class="fas fa-phone-alt mr-1"></i>Sortant
+                            </span>
+                            {% else %}
+                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                <i class="fas fa-phone mr-1"></i>Entrant
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if prospection.statut == 'RDV' %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
+                                <i class="fas fa-calendar-check mr-1"></i>RDV
+                            </span>
+                            {% elif prospection.statut == 'BV' %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 border border-red-300">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>BV
+                            </span>
+                            {% elif prospection.statut == 'CLIENT_ACQUIS' %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-300">
+                                <i class="fas fa-check-circle mr-1"></i>Client acquis
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 border border-gray-300">
+                                <i class="fas fa-redo mr-1"></i>À relancer
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% if prospection.date_rdv %}
+                            <i class="fas fa-calendar text-blue-500 mr-1"></i>
+                            {{ prospection.date_rdv|date:"d/m/Y" }}
+                            {% else %}
+                            <span class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <i class="fas fa-user-tie text-blue-500 mr-1"></i>
+                            {{ prospection.commercial.first_name }} {{ prospection.commercial.last_name }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ prospection.date_creation|date:"d/m/Y H:i" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            <div class="flex items-center justify-center space-x-2">
+                                <a href="{% url 'inventory:prospection_detail' prospection.pk %}" 
+                                   class="text-blue-600 hover:text-blue-900" title="Voir détails">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'inventory:prospection_edit' prospection.pk %}" 
+                                   class="text-yellow-600 hover:text-yellow-900" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'inventory:prospection_delete' prospection.pk %}" 
+                                   class="text-red-600 hover:text-red-900" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="px-6 py-12 text-center">
+                            <div class="text-gray-400">
+                                <i class="fas fa-inbox text-6xl mb-4"></i>
+                                <p class="text-lg">Aucune prospection trouvée</p>
+                                <p class="text-sm mt-2">Commencez par créer votre première fiche de prospection</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-700">
+                    Affichage de <span class="font-medium">{{ page_obj.start_index }}</span> à 
+                    <span class="font-medium">{{ page_obj.end_index }}</span> sur 
+                    <span class="font-medium">{{ page_obj.paginator.count }}</span> résultats
+                </div>
+                <div class="flex space-x-2">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1&{{ request.GET.urlencode }}" 
+                       class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}" 
+                       class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                    {% endif %}
+                    
+                    <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">
+                        Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                    </span>
+                    
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}" 
+                       class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode }}" 
+                       class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

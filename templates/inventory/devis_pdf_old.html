@@ -1,0 +1,444 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Devis {{ devis.numero_devis }}</title>
+    {% include 'inventory/pdf_base_styles.html' %}
+    <style>
+        /* Couleurs spécifiques pour les devis */
+        :root {
+            --primary-color: #2563eb;
+            --light-bg: #f8fafc;
+        }
+        
+        /* Informations client et devis */
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 30px;
+        }
+        
+        .client-info, .devis-info {
+            flex: 1;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .info-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .info-content {
+            font-size: 10pt;
+            line-height: 1.8;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 120px;
+        }
+        
+        /* Tableau des produits */
+        .products-section {
+            margin: 30px 0;
+        }
+        
+        .products-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        thead {
+            background: #1e40af;
+            color: white;
+        }
+        
+        th {
+            padding: 12px 8px;
+            text-align: left;
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        th.center, td.center {
+            text-align: center;
+        }
+        
+        th.right, td.right {
+            text-align: right;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        td {
+            padding: 10px 8px;
+            font-size: 10pt;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        /* Totaux */
+        .totals-section {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .totals-box {
+            width: 350px;
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 11pt;
+        }
+        
+        .total-row.subtotal {
+            border-bottom: 1px solid #d1d5db;
+        }
+        
+        .total-row.final {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #1e40af;
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1e40af;
+        }
+        
+        .total-label {
+            font-weight: 600;
+        }
+        
+        .total-value {
+            font-weight: bold;
+        }
+        
+        /* Conditions commerciales */
+        .conditions-section {
+            margin-top: 30px;
+            page-break-inside: avoid;
+        }
+        
+        .conditions-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .conditions-box {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 9pt;
+            line-height: 1.8;
+        }
+        
+        .condition-item {
+            margin-bottom: 8px;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .condition-item:before {
+            content: "▪";
+            position: absolute;
+            left: 0;
+            color: #f59e0b;
+            font-weight: bold;
+        }
+        
+        /* Notes */
+        .notes-section {
+            margin-top: 20px;
+            page-break-inside: avoid;
+        }
+        
+        .notes-content {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 9pt;
+            font-style: italic;
+            color: #475569;
+        }
+        
+        /* Section signature */
+        .signature-section {
+            margin-top: 40px;
+            page-break-inside: avoid;
+        }
+        
+        .lu-approuve {
+            text-align: center;
+            font-size: 10pt;
+            font-style: italic;
+            color: #666;
+            margin-bottom: 30px;
+            padding: 10px;
+            background: #fef3c7;
+            border: 1px dashed #f59e0b;
+            border-radius: 4px;
+        }
+        
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .signature-box {
+            width: 45%;
+            text-align: center;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 120px;
+            background: white;
+        }
+        
+        .signature-title {
+            font-weight: bold;
+            font-size: 11pt;
+            color: #1e40af;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .signature-line {
+            margin-top: 60px;
+            border-top: 2px solid #333;
+            padding-top: 5px;
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #d1d5db;
+            text-align: center;
+            font-size: 8pt;
+            color: #9ca3af;
+        }
+        
+        /* Utilitaires */
+        .currency {
+            font-weight: 600;
+        }
+        
+        .text-muted {
+            color: #6b7280;
+        }
+        
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- EN-TÊTE -->
+    <div class="header">
+        <div class="logo-section">
+            <img src=" 'images/logo.png'" alt="Logo" class="logo">
+            <div class="company-name">DIMAT MEDICAL</div>
+            <div class="company-info">
+                <strong>Zybio Business Manager - Sénégal</strong><br>
+                Adresse : {{ company_address|default:"Dakar, Sénégal" }}<br>
+                Tél : {{ company_phone|default:"+221 XX XXX XX XX" }}<br>
+                Email : {{ company_email|default:"contact@dimatmedical.sn" }}<br>
+                {% if company_website %}Site web : {{ company_website }}{% endif %}
+            </div> 
+        </div>
+        
+        <div class="devis-title">
+            <h1>DEVIS</h1>
+            <div class="devis-number">N° {{ devis.numero_devis }}</div>
+        </div>
+    </div>
+    
+    <!-- INFORMATIONS CLIENT ET DEVIS -->
+    <div class="info-section">
+        <div class="client-info">
+            <div class="info-title">Client</div>
+            <div class="info-content">
+                <div><span class="info-label">Nom :</span> {{ devis.client.nom_complet }}</div>
+                <div><span class="info-label">Adresse :</span> {{ devis.client.adresse }}</div>
+                <div><span class="info-label">Téléphone :</span> {{ devis.client.telephone }}</div>
+                <div><span class="info-label">Email :</span> {{ devis.client.email }}</div>
+            </div>
+        </div>
+        
+        <div class="devis-info">
+            <div class="info-title">Détails du Devis</div>
+            <div class="info-content">
+                <div><span class="info-label">Date :</span> {{ devis.date_creation|date:"d/m/Y" }}</div>
+                <div><span class="info-label">Validité :</span> {{ devis.date_validite|date:"d/m/Y" }}</div>
+                <div><span class="info-label">Commercial :</span> {{ devis.commercial.get_full_name|default:devis.commercial.username }}</div>
+                <div><span class="info-label">Statut :</span> <span class="highlight">{{ devis.get_statut_display }}</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TABLEAU DES PRODUITS -->
+    <div class="products-section">
+        <div class="products-title">Détail des Produits / Services</div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%;">N°</th>
+                    <th style="width: 35%;">Désignation</th>
+                    <th class="center" style="width: 10%;">Quantité</th>
+                    <th class="right" style="width: 15%;">Prix Unitaire</th>
+                    <th class="center" style="width: 10%;">Remise</th>
+                    <th class="right" style="width: 15%;">Montant HT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in lignes_devis %}
+                <tr>
+                    <td class="center">{{ forloop.counter }}</td>
+                    <td class="product-name">{{ ligne.produit.nom }}</td>
+                    <td class="center">{{ ligne.quantite }}</td>
+                    <td class="right">{{ ligne.prix_unitaire|floatformat:0 }} F CFA</td>
+                    <td class="center">{{ ligne.remise|floatformat:0 }}%</td>
+                    <td class="right currency">{{ ligne.sous_total|floatformat:0 }} F CFA</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- TOTAUX -->
+    <div class="totals-section">
+        <div class="totals-box">
+            <div class="total-row subtotal">
+                <span class="total-label">Sous-total HT :</span>
+                <span class="total-value">{{ devis.total|floatformat:0 }} F CFA</span>
+            </div>
+            <div class="total-row">
+                <span class="total-label">TVA (18%) :</span>
+                <span class="total-value">{{ tva|floatformat:0 }} F CFA</span>
+            </div>
+            <div class="total-row final">
+                <span class="total-label">TOTAL TTC :</span>
+                <span class="total-value">{{ total_ttc|floatformat:0 }} F CFA</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CONDITIONS COMMERCIALES -->
+    <div class="conditions-section">
+        <div class="conditions-title">Conditions Commerciales</div>
+        <div class="conditions-box">
+            <div class="condition-item">
+                <strong>Garantie :</strong> Garantie fabricant de 12 mois à compter de la date de livraison
+            </div>
+            <div class="condition-item">
+                <strong>Service Après-Vente (SAV) :</strong> Support technique disponible du lundi au vendredi (9h-17h). Intervention sous 48h ouvrées
+            </div>
+            <div class="condition-item">
+                <strong>Validité de l'offre :</strong> Ce devis est valable jusqu'au {{ devis.date_validite|date:"d/m/Y" }}
+            </div>
+            <div class="condition-item">
+                <strong>Livraison :</strong> Livraison et installation sur site sous 7 à 10 jours ouvrables après réception du bon de commande
+            </div>
+            <div class="condition-item">
+                <strong>Mode de paiement :</strong> 40% à la commande, 60% à la livraison. Paiement par virement bancaire ou chèque certifié
+            </div>
+            <div class="condition-item">
+                <strong>Formation :</strong> Formation gratuite du personnel à l'utilisation des équipements livrés (1 session de 2 heures)
+            </div>
+        </div>
+    </div>
+    
+    <!-- NOTES PARTICULIÈRES -->
+    {% if devis.notes or devis.conditions_particulieres %}
+    <div class="notes-section">
+        <div class="conditions-title">Notes et Conditions Particulières</div>
+        <div class="notes-content">
+            {% if devis.notes %}
+                <strong>Notes :</strong> {{ devis.notes }}<br><br>
+            {% endif %}
+            {% if devis.conditions_particulieres %}
+                <strong>Conditions particulières :</strong> {{ devis.conditions_particulieres }}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- SECTION SIGNATURE -->
+    <div class="signature-section">
+        <div class="lu-approuve">
+            "Bon pour accord - Lu et approuvé"<br>
+            En signant ce document, vous acceptez les termes et conditions ci-dessus
+        </div>
+        
+        <div class="signatures">
+            <div class="signature-box">
+                <div class="signature-title">Pour l'Entreprise</div>
+                <div class="signature-line">
+                    Signature et Cachet<br>
+                    DIMAT MEDICAL
+                </div>
+            </div>
+            
+            <div class="signature-box">
+                <div class="signature-title">Le Client</div>
+                <div class="signature-line">
+                    Signature<br>
+                    {{ devis.client.nom_complet }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FOOTER -->
+    <div class="footer">
+        Document généré le {{ now|date:"d/m/Y à H:i" }} - DIMAT MEDICAL / Zybio Business Manager Sénégal<br>
+        Devis non contractuel jusqu'à signature - Tous droits réservés
+    </div>
+</body>
+</html>

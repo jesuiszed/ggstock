@@ -129,36 +129,50 @@
         <ul class="divide-y divide-gray-200">
             {% for devis_item in devis %}
             <li>
-                <a href="{% url 'inventory:devis_detail' devis_item.pk %}" class="block hover:bg-gray-50">
-                    <div class="px-4 py-4 sm:px-6">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <i class="fas fa-file-alt text-gray-400 text-xl"></i>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-indigo-600">{{ devis_item.numero_devis }}</div>
-                                    <div class="text-sm text-gray-500">{{ devis_item.client.nom_complet }}</div>
-                                </div>
+                <div class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <a href="{% url 'inventory:devis_detail' devis_item.pk %}" class="flex items-center flex-1">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-file-alt text-gray-400 text-xl"></i>
                             </div>
-                            <div class="flex items-center space-x-4">
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-900">{{ devis_item.total|floatformat:2 }}F CFA</div>
-                                    <div class="text-sm text-gray-500">{{ devis_item.date_creation|date:"d/m/Y" }}</div>
-                                </div>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    {% if devis_item.statut == 'BROUILLON' %}bg-gray-100 text-gray-800
-                                    {% elif devis_item.statut == 'ENVOYE' %}bg-blue-100 text-blue-800
-                                    {% elif devis_item.statut == 'ACCEPTE' %}bg-green-100 text-green-800
-                                    {% elif devis_item.statut == 'REFUSE' %}bg-red-100 text-red-800
-                                    {% elif devis_item.statut == 'EXPIRE' %}bg-yellow-100 text-yellow-800
-                                    {% endif %}">
-                                    {{ devis_item.get_statut_display }}
-                                </span>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-indigo-600">{{ devis_item.numero_devis }}</div>
+                                <div class="text-sm text-gray-500">{{ devis_item.client.nom_complet }}</div>
+                            </div>
+                        </a>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <div class="text-sm font-medium text-gray-900">{{ devis_item.total|floatformat:2 }} F CFA</div>
+                                <div class="text-sm text-gray-500">{{ devis_item.date_creation|date:"d/m/Y" }}</div>
+                            </div>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if devis_item.statut == 'BROUILLON' %}bg-gray-100 text-gray-800
+                                {% elif devis_item.statut == 'ENVOYE' %}bg-blue-100 text-blue-800
+                                {% elif devis_item.statut == 'ACCEPTE' %}bg-green-100 text-green-800
+                                {% elif devis_item.statut == 'REFUSE' %}bg-red-100 text-red-800
+                                {% elif devis_item.statut == 'EXPIRE' %}bg-yellow-100 text-yellow-800
+                                {% endif %}">
+                                {{ devis_item.get_statut_display }}
+                            </span>
+                            
+                            <!-- Boutons d'action -->
+                            <div class="flex space-x-2">
+                                <a href="{% url 'inventory:devis_pdf' devis_item.pk %}" 
+                                   class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                   title="Télécharger PDF">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <span class="ml-1 hidden sm:inline">PDF</span>
+                                </a>
+                                <a href="{% url 'inventory:devis_edit' devis_item.pk %}" 
+                                   class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                   title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                    <span class="ml-1 hidden sm:inline">Modifier</span>
+                                </a>
                             </div>
                         </div>
                     </div>
-                </a>
+                </div>
             </li>
             {% empty %}
             <li class="p-8 text-center text-gray-500">
